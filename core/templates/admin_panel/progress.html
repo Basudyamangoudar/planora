@@ -1,0 +1,348 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% load static %}
+
+{% block title %}Student Progress - Planora Admin{% endblock %}
+{% block page_title %}Student Progress Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Progress Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card" style="border-left-color: #3498db;">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h4 class="text-primary">{{ progress_data|length }}</h4>
+                        <p class="mb-0">Total Students</p>
+                    </div>
+                    <i class="fas fa-users fa-2x text-primary"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card" style="border-left-color: #2ecc71;">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h4 class="text-success">{{ high_progress_count }}</h4>
+                        <p class="mb-0">High Progress</p>
+                    </div>
+                    <i class="fas fa-chart-line fa-2x text-success"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card" style="border-left-color: #f39c12;">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h4 class="text-warning">{{ medium_progress_count }}</h4>
+                        <p class="mb-0">Medium Progress</p>
+                    </div>
+                    <i class="fas fa-chart-bar fa-2x text-warning"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card" style="border-left-color: #e74c3c;">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h4 class="text-danger">{{ low_progress_count }}</h4>
+                        <p class="mb-0">Low Progress</p>
+                    </div>
+                    <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Filters</h5>
+        </div>
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label for="course" class="form-label">Filter by Course</label>
+                    <select name="course" id="course" class="form-select">
+                        <option value="">All Courses</option>
+                        {% for course in courses %}
+                        <option value="{{ course.id }}" {% if selected_course == course.id|stringformat:"i" %}selected{% endif %}>
+                            {{ course.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="progress" class="form-label">Filter by Progress</label>
+                    <select name="progress" id="progress" class="form-select">
+                        <option value="">All Progress</option>
+                        <option value="high" {% if selected_progress == 'high' %}selected{% endif %}>High (80-100%)</option>
+                        <option value="medium" {% if selected_progress == 'medium' %}selected{% endif %}>Medium (50-79%)</option>
+                        <option value="low" {% if selected_progress == 'low' %}selected{% endif %}>Low (0-49%)</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-filter me-1"></i>Apply Filters
+                    </button>
+                    <a href="{% url 'student_progress' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-refresh me-1"></i>Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Progress Table -->
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Student Progress Overview</h5>
+            <span class="badge bg-light text-primary">{{ progress_data|length }} students</span>
+        </div>
+        <div class="card-body">
+            {% if progress_data %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Student</th>
+                            <th>Contact</th>
+                            <th>Overall Progress</th>
+                            <th>Courses Progress</th>
+                            <th>Last Activity</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in progress_data %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle bg-primary text-white me-3">
+                                        {{ data.student.user.first_name|first }}{{ data.student.user.last_name|first }}
+                                    </div>
+                                    <div>
+                                        <strong>{{ data.student.user.first_name }} {{ data.student.user.last_name }}</strong>
+                                        <br>
+                                        <small class="text-muted">@{{ data.student.user.username }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <small class="text-muted">{{ data.student.user.email }}</small>
+                                    <br>
+                                    <small>{{ data.student.mobile }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="progress-wrapper">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="progress-label">{{ data.overall_progress.percentage }}%</span>
+                                        <small class="text-muted">{{ data.overall_progress.completed_lessons }}/{{ data.overall_progress.total_lessons }} lessons</small>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar 
+                                            {% if data.overall_progress.percentage >= 80 %}bg-success
+                                            {% elif data.overall_progress.percentage >= 50 %}bg-warning
+                                            {% else %}bg-danger{% endif %}" 
+                                            role="progressbar" 
+                                            style="width: {{ data.overall_progress.percentage }}%">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="course-progress">
+                                    {% for course_progress in data.course_progress %}
+                                    <div class="mb-2">
+                                        <div class="d-flex justify-content-between">
+                                            <small class="text-muted">{{ course_progress.course.name|truncatewords:2 }}</small>
+                                            <small class="text-muted">{{ course_progress.percentage }}%</small>
+                                        </div>
+                                        <div class="progress" style="height: 4px;">
+                                            <div class="progress-bar 
+                                                {% if course_progress.percentage >= 80 %}bg-success
+                                                {% elif course_progress.percentage >= 50 %}bg-warning
+                                                {% else %}bg-danger{% endif %}" 
+                                                role="progressbar" 
+                                                style="width: {{ course_progress.percentage }}%">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% empty %}
+                                    <span class="text-muted">No courses</span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ data.overall_progress.last_activity|timesince }} ago</small>
+                            </td>
+                            <td>
+                                {% if data.overall_progress.percentage >= 80 %}
+                                <span class="badge bg-success">Excellent</span>
+                                {% elif data.overall_progress.percentage >= 50 %}
+                                <span class="badge bg-warning">Good</span>
+                                {% else %}
+                                <span class="badge bg-danger">Needs Help</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'add_progress' data.student.id %}" class="btn btn-outline-primary" title="Add Progress">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                    <a href="{% url 'edit_progress' data.overall_progress.id %}" class="btn btn-outline-warning" title="Edit Progress">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteProgressModal{{ data.overall_progress.id }}" title="Delete Progress">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Delete Confirmation Modal -->
+                                <div class="modal fade" id="deleteProgressModal{{ data.overall_progress.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title">Confirm Deletion</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete progress records for 
+                                                <strong>{{ data.student.user.first_name }} {{ data.student.user.last_name }}</strong>?
+                                                <br><small class="text-muted">This action cannot be undone.</small>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form method="POST" action="{% url 'delete_progress' data.overall_progress.id %}" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger">Delete Progress</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-chart-bar fa-4x text-muted mb-3"></i>
+                <h5>No Progress Data Available</h5>
+                <p class="text-muted">No student progress records found matching your criteria.</p>
+                <a href="{% url 'students' %}" class="btn btn-primary">
+                    <i class="fas fa-users me-2"></i>View All Students
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Stats Section -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">Progress Distribution</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>High Progress (80-100%)</span>
+                            <span class="badge bg-success">{{ high_progress_count }}</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-success" style="width: {{ high_progress_percentage }}%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Medium Progress (50-79%)</span>
+                            <span class="badge bg-warning">{{ medium_progress_count }}</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-warning" style="width: {{ medium_progress_percentage }}%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Low Progress (0-49%)</span>
+                            <span class="badge bg-danger">{{ low_progress_count }}</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-danger" style="width: {{ low_progress_percentage }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'students' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-users me-2"></i>Manage Students
+                        </a>
+                        <a href="{% url 'admin_courses' %}" class="btn btn-outline-success">
+                            <i class="fas fa-book me-2"></i>View Courses
+                        </a>
+                        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-info">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.progress-wrapper {
+    min-width: 150px;
+}
+
+.course-progress {
+    max-width: 200px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-left: 4px solid;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.progress {
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+</style>
+{% endblock %}

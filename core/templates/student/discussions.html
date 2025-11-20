@@ -1,0 +1,224 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussions - Planora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3498db;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin: 20px;
+            overflow: hidden;
+        }
+        
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .discussion-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: none;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .discussion-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .avatar-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+        }
+        
+        .post-badge {
+            font-size: 0.7em;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+        
+        .badge-question { background-color: #3498db; }
+        .badge-discussion { background-color: #2ecc71; }
+        .badge-announcement { background-color: #e74c3c; }
+        .badge-resource { background-color: #f39c12; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{% url 'student_dashboard' %}">
+                <i class="fas fa-graduation-cap me-2"></i>Planora Learning
+            </a>
+            <div class="navbar-nav ms-auto align-items-center">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                        <div class="avatar-circle me-2">
+                            {{ student.user.first_name|first }}{{ student.user.last_name|first }}
+                        </div>
+                        <span>Welcome, {{ student.user.first_name }}!</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'student_dashboard' %}"><i class="fas fa-home me-2"></i>Dashboard</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="{% url 'student_logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="container-fluid py-4">
+            <!-- Header -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="fw-bold text-dark"><i class="fas fa-comments me-2 text-primary"></i>Course Discussions</h1>
+                        <a href="{% url 'student_dashboard' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                    <p class="text-muted">Discuss course topics, ask questions, and collaborate with peers</p>
+                </div>
+            </div>
+
+            <!-- Discussion Rooms -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="discussion-card">
+                        <h4 class="fw-bold mb-3"><i class="fas fa-door-open me-2 text-success"></i>Discussion Rooms</h4>
+                        <div class="row">
+                            {% for room in discussion_rooms %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="card-title">{{ room.title }}</h5>
+                                            {% if room.is_pinned %}
+                                            <span class="badge bg-warning"><i class="fas fa-thumbtack"></i></span>
+                                            {% endif %}
+                                        </div>
+                                        <p class="text-muted small">{{ room.description }}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">
+                                                <i class="fas fa-book me-1"></i>{{ room.course.name }}
+                                            </small>
+                                            <a href="{% url 'discussion_room' room.id %}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-arrow-right me-1"></i>Enter
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col-12 text-center py-4">
+                                <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                                <h5>No Discussion Rooms Available</h5>
+                                <p class="text-muted">Your instructor hasn't created any discussion rooms yet.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Posts -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="discussion-card">
+                        <h4 class="fw-bold mb-3"><i class="fas fa-clock me-2 text-warning"></i>Recent Discussions</h4>
+                        <div class="list-group">
+                            {% for post in recent_posts %}
+                            <a href="#" class="list-group-item list-group-item-action border-0">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ post.title }}</h6>
+                                    <small class="text-muted">{{ post.created_at|timesince }} ago</small>
+                                </div>
+                                <p class="mb-1 text-muted">{{ post.content|truncatewords:20 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small>
+                                        <span class="badge post-badge 
+                                            {% if post.post_type == 'question' %}badge-question
+                                            {% elif post.post_type == 'discussion' %}badge-discussion
+                                            {% elif post.post_type == 'announcement' %}badge-announcement
+                                            {% else %}badge-resource{% endif %}">
+                                            {{ post.get_post_type_display }}
+                                        </span>
+                                        in {{ post.room.title }}
+                                    </small>
+                                    <small class="text-muted">by {{ post.author.user.username }}</small>
+                                </div>
+                            </a>
+                            {% empty %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-comment-slash fa-2x mb-2"></i>
+                                <p>No recent discussions</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Posts -->
+                <div class="col-md-4">
+                    <div class="discussion-card h-100">
+                        <h4 class="fw-bold mb-3"><i class="fas fa-user me-2 text-info"></i>My Posts</h4>
+                        <div class="list-group">
+                            {% for post in my_posts %}
+                            <div class="list-group-item border-0">
+                                <h6 class="mb-1">{{ post.title }}</h6>
+                                <small class="text-muted">{{ post.room.title }}</small>
+                                <br>
+                                <small class="text-muted">{{ post.created_at|date:"M d, Y" }}</small>
+                            </div>
+                            {% empty %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-edit fa-2x mb-2"></i>
+                                <p>You haven't posted anything yet</p>
+                                <small>Join a discussion room to get started!</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

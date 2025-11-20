@@ -1,0 +1,257 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignments - Planora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3498db;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin: 20px;
+            overflow: hidden;
+        }
+        
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .assignment-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: none;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .assignment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .avatar-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+        }
+        
+        .deadline-badge {
+            font-size: 0.75em;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+        
+        .completed-card {
+            border-left: 4px solid var(--success);
+        }
+        
+        .overdue-card {
+            border-left: 4px solid var(--danger);
+        }
+        
+        .urgent-card {
+            border-left: 4px solid var(--warning);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{% url 'student_dashboard' %}">
+                <i class="fas fa-graduation-cap me-2"></i>Planora Learning
+            </a>
+            <div class="navbar-nav ms-auto align-items-center">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                        <div class="avatar-circle me-2">
+                            {{ student.user.first_name|first }}{{ student.user.last_name|first }}
+                        </div>
+                        <span>Welcome, {{ student.user.first_name }}!</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'student_dashboard' %}"><i class="fas fa-home me-2"></i>Dashboard</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="{% url 'student_logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="container-fluid py-4">
+            <!-- Header -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="fw-bold text-dark"><i class="fas fa-tasks me-2 text-warning"></i>My Assignments</h1>
+                        <a href="{% url 'student_dashboard' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                    <p class="text-muted">Track and submit your course assignments</p>
+                </div>
+            </div>
+
+            <!-- Assignment Cards -->
+            <div class="row">
+                {% for student_assignment in student_assignments %}
+                <div class="col-lg-6 mb-4">
+                    <div class="assignment-card 
+                        {% if student_assignment.status == 'graded' or student_assignment.status == 'submitted' %}completed-card
+                        {% elif student_assignment.assignment.is_overdue %}overdue-card
+                        {% elif student_assignment.assignment.days_until_due <= 2 %}urgent-card
+                        {% endif %}">
+                        
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="fw-bold text-dark mb-0">{{ student_assignment.assignment.title }}</h5>
+                            <span class="badge 
+                                {% if student_assignment.status == 'graded' or student_assignment.status == 'submitted' %}bg-success
+                                {% elif student_assignment.assignment.is_overdue %}bg-danger
+                                {% elif student_assignment.assignment.days_until_due <= 2 %}bg-warning
+                                {% else %}bg-primary{% endif %} deadline-badge">
+                                
+                                {% if student_assignment.status == 'graded' %}Graded
+                                {% elif student_assignment.status == 'submitted' %}Submitted
+                                {% elif student_assignment.assignment.is_overdue %}Overdue
+                                {% elif student_assignment.assignment.days_until_due <= 2 %}Due Soon
+                                {% else %}Due in {{ student_assignment.assignment.days_until_due }} days
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <p class="text-muted mb-3">{{ student_assignment.assignment.description|truncatewords:20 }}</p>
+                        
+                        <div class="mb-3">
+                            <small class="text-muted"><strong>Course:</strong> {{ student_assignment.assignment.course.name }}</small><br>
+                            <small class="text-muted"><strong>Type:</strong> {{ student_assignment.assignment.assignment_type|title }}</small><br>
+                            <small class="text-muted"><strong>Points:</strong> {{ student_assignment.assignment.max_points }}</small>
+                            {% if student_assignment.grade %}
+                            <br><small class="text-muted"><strong>Your Grade:</strong> {{ student_assignment.grade }}/{{ student_assignment.assignment.max_points }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                Due: {{ student_assignment.assignment.due_date|date:"M d, Y H:i" }}
+                            </small>
+                            
+                            <div class="btn-group">
+                                {% if student_assignment.status == 'not_started' or student_assignment.status == 'in_progress' %}
+                                    <a href="{% url 'submit_assignment' student_assignment.assignment.id %}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-upload me-1"></i>Submit
+                                    </a>
+                                {% elif student_assignment.status == 'submitted' %}
+                                    <button class="btn btn-sm btn-success" disabled>
+                                        <i class="fas fa-check me-1"></i>Submitted
+                                    </button>
+                                    {% if student_assignment.submitted_file %}
+                                    <a href="{{ student_assignment.submitted_file.url }}" class="btn btn-sm btn-outline-secondary" download>
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </a>
+                                    {% endif %}
+                                {% elif student_assignment.status == 'graded' %}
+                                    <button class="btn btn-sm btn-info" disabled>
+                                        <i class="fas fa-star me-1"></i>Graded
+                                    </button>
+                                    {% if student_assignment.submitted_file %}
+                                    <a href="{{ student_assignment.submitted_file.url }}" class="btn btn-sm btn-outline-secondary" download>
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </a>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if student_assignment.feedback %}
+                        <div class="mt-3 p-2 bg-light rounded">
+                            <small><strong>Instructor Feedback:</strong> {{ student_assignment.feedback }}</small>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                        <h4>No Assignments Found</h4>
+                        <p class="text-muted">You don't have any assignments yet, or all your assignments are completed.</p>
+                        <a href="{% url 'student_dashboard' %}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Assignment Statistics -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="assignment-card">
+                        <h5 class="fw-bold mb-3"><i class="fas fa-chart-pie me-2 text-primary"></i>Assignment Overview</h5>
+                        <div class="row text-center">
+                            <div class="col-md-3 mb-3">
+                                <div class="p-3 bg-light rounded">
+                                    <h3 class="text-primary fw-bold">{{ student_assignments.count }}</h3>
+                                    <small class="text-muted">Total Assignments</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="p-3 bg-light rounded">
+                                    <h3 class="text-success fw-bold">{{ completed_count }}</h3>
+                                    <small class="text-muted">Completed</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="p-3 bg-light rounded">
+                                    <h3 class="text-warning fw-bold">{{ pending_count }}</h3>
+                                    <small class="text-muted">Pending</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="p-3 bg-light rounded">
+                                    <h3 class="text-danger fw-bold">{{ overdue_count }}</h3>
+                                    <small class="text-muted">Overdue</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

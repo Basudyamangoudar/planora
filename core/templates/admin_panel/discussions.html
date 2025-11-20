@@ -1,0 +1,149 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% load static %}
+
+{% block title %}Discussion Management - Planora Admin{% endblock %}
+
+{% block page_title %}Discussion Management{% endblock %}
+
+{% block content %}
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card text-center">
+            <h3 class="text-primary">{{ discussion_rooms.count }}</h3>
+            <p class="text-muted mb-0">Discussion Rooms</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card text-center">
+            <h3 class="text-success">{{ total_posts }}</h3>
+            <p class="text-muted mb-0">Total Posts</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card text-center">
+            <h3 class="text-warning">{{ total_replies }}</h3>
+            <p class="text-muted mb-0">Total Replies</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card text-center">
+            <h3 class="text-info">{{ recent_posts.count }}</h3>
+            <p class="text-muted mb-0">Recent Posts</p>
+        </div>
+    </div>
+</div>
+
+<!-- Discussion Rooms -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0"><i class="fas fa-door-open me-2"></i>Discussion Rooms</h5>
+                <a href="{% url 'create_discussion_room' %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus me-2"></i>Create Room
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for room in discussion_rooms %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card discussion-room-card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h6 class="card-title">{{ room.title }}</h6>
+                                    <span class="badge {% if room.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                        {% if room.is_active %}Active{% else %}Inactive{% endif %}
+                                    </span>
+                                </div>
+                                <p class="card-text text-muted small">{{ room.description }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-book me-1"></i>{{ room.course.name }}
+                                    </small>
+                                    <div>
+                                        <a href="{% url 'admin_discussion_posts' room.id %}" class="btn btn-sm btn-outline-primary">
+                                            View Posts
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-4">
+                        <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                        <h5>No Discussion Rooms</h5>
+                        <p class="text-muted">Create your first discussion room to get started.</p>
+                        <a href="{% url 'create_discussion_room' %}" class="btn btn-primary">
+                            Create Discussion Room
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Posts -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-clock me-2"></i>Recent Posts</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_posts %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Room</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for post in recent_posts %}
+                            <tr>
+                                <td>{{ post.title|truncatewords:5 }}</td>
+                                <td>{{ post.author.user.username }}</td>
+                                <td>{{ post.room.title }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if post.post_type == 'question' %}bg-primary
+                                        {% elif post.post_type == 'discussion' %}bg-success
+                                        {% elif post.post_type == 'announcement' %}bg-danger
+                                        {% else %}bg-warning{% endif %}">
+                                        {{ post.get_post_type_display }}
+                                    </span>
+                                </td>
+                                <td>{{ post.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <form method="POST" action="{% url 'delete_discussion_post' post.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this post?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-comment-slash fa-2x mb-2"></i>
+                    <p>No posts yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

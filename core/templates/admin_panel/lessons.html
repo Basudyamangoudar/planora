@@ -1,0 +1,126 @@
+{% extends 'admin_panel/base_admin.html' %}
+
+{% block title %}Lessons Management - Admin Panel{% endblock %}
+{% block page_title %}Lessons Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header with Add Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4>All Lessons</h4>
+            {% if selected_course %}
+            <p class="text-muted mb-0">Filtered by: {{ selected_course.name }}</p>
+            {% endif %}
+        </div>
+        <div>
+            <a href="{% url 'add_lesson' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Add New Lesson
+            </a>
+        </div>
+    </div>
+
+    <!-- Course Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <label for="course_id" class="form-label">Filter by Course</label>
+                    <select name="course_id" id="course_id" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Courses</option>
+                        {% for course in courses %}
+                        <option value="{{ course.id }}" {% if selected_course and selected_course.id == course.id %}selected{% endif %}>
+                            {{ course.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <a href="{% url 'admin_lessons' %}" class="btn btn-outline-secondary">Clear Filter</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lessons Table -->
+    <div class="card">
+        <div class="card-body">
+            {% if lessons %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Course</th>
+                            <th>Duration</th>
+                            <th>Order</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lesson in lessons %}
+                        <tr>
+                            <td>
+                                <strong>{{ lesson.title }}</strong>
+                                <br>
+                                <small class="text-muted">{{ lesson.description|truncatewords:10 }}</small>
+                            </td>
+                            <td>{{ lesson.course.name }}</td>
+                            <td>{{ lesson.duration }}</td>
+                            <td>{{ lesson.order }}</td>
+                            <td>
+                                <span class="badge {% if lesson.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ lesson.is_active|yesno:"Active,Inactive" }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{% url 'edit_lesson' lesson.id %}" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form method="post" action="{% url 'delete_lesson' lesson.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this lesson?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                <h5>No Lessons Found</h5>
+                <p class="text-muted">
+                    {% if selected_course %}
+                    No lessons available for {{ selected_course.name }}.
+                    {% else %}
+                    No lessons have been created yet.
+                    {% endif %}
+                </p>
+                <a href="{% url 'add_lesson' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create First Lesson
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-primary">{{ total_lessons }}</h3>
+                    <p class="mb-0">Total Lessons</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

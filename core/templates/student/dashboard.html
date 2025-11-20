@@ -1,0 +1,950 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Planora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <style>
+        /* Your existing CSS styles remain exactly the same */
+        :root {
+            --primary: #3498db;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin: 20px;
+            overflow: hidden;
+        }
+        
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: none;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .progress-ring {
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
+        
+        .progress-bg {
+            fill: none;
+            stroke: #ecf0f1;
+            stroke-width: 8;
+        }
+        
+        .progress-fill {
+            fill: none;
+            stroke: var(--success);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dasharray 1s ease-in-out;
+        }
+        
+        .avatar-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+        }
+        
+        .course-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .ai-chat-bubble {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 15px 20px;
+            margin: 10px 0;
+            border: 1px solid #e9ecef;
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        .ai-response {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            color: white;
+            border-radius: 20px;
+            padding: 15px 20px;
+            margin: 10px 0;
+            animation: fadeInUp 0.5s ease 0.2s both;
+        }
+
+        .ai-roadmap {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border-radius: 20px;
+            padding: 15px 20px;
+            margin: 10px 0;
+            animation: fadeInUp 0.5s ease 0.2s both;
+        }
+        
+        .quick-tip-badge {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quick-tip-badge:hover {
+            transform: translateY(-2px);
+            background: var(--primary) !important;
+            color: white !important;
+        }
+        
+        .activity-item {
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+            animation: slideInRight 0.5s ease;
+        }
+        
+        .schedule-item {
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border-left: 4px solid var(--warning);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .deadline-item {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border-left: 4px solid #c23616;
+        }
+        
+        .study-session {
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            background: white;
+            border-left: 4px solid var(--primary);
+            font-size: 0.9em;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .badge-custom {
+            font-size: 0.75em;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        /* AI Chat Container */
+        #ai-chat-container {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .code-block {
+            background: rgba(0,0,0,0.1);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+
+        .study-plan {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fas fa-graduation-cap me-2"></i>Planora Learning
+            </a>
+            <div class="navbar-nav ms-auto align-items-center">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                        <div class="avatar-circle me-2">
+                            {{ student.user.first_name|first }}{{ student.user.last_name|first }}
+                        </div>
+                        <span>Welcome, {{ student.user.first_name }}!</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="{% url 'student_logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="container-fluid py-4">
+            <!-- Success Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Overview Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-4">
+                    <div class="stat-card text-center 
+                        {% if progress.percentage >= 80 %}progress-high
+                        {% elif progress.percentage >= 50 %}progress-medium
+                        {% else %}progress-low{% endif %}">
+                        <div class="progress-ring mx-auto mb-3">
+                            <svg viewBox="0 0 36 36">
+                                <path class="progress-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="progress-fill" stroke-dasharray="{{ progress.percentage }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                        </div>
+                        <h4 class="fw-bold 
+                            {% if progress.percentage >= 80 %}progress-text-high
+                            {% elif progress.percentage >= 50 %}progress-text-medium
+                            {% else %}progress-text-low{% endif %}">
+                            {{ progress.percentage }}%
+                        </h4>
+                        <h5 class="fw-bold">Overall Progress</h5>
+                        <p class="text-muted mb-0">{{ progress.completed_lessons }}/{{ progress.total_lessons }} lessons completed</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <div class="stat-card">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h2 class="text-primary fw-bold">{{ courses.count }}</h2>
+                                <p class="mb-0 fw-semibold">Enrolled Courses</p>
+                                <small class="text-muted">Active learning</small>
+                            </div>
+                            <i class="fas fa-book-open fa-3x text-primary opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <div class="stat-card">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h2 class="text-success fw-bold">{{ completed_courses }}</h2>
+                                <p class="mb-0 fw-semibold">Completed</p>
+                                <small class="text-muted">Courses finished</small>
+                            </div>
+                            <i class="fas fa-trophy fa-3x text-success opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <div class="stat-card">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h2 class="text-warning fw-bold">{{ upcoming_deadlines }}</h2>
+                                <p class="mb-0 fw-semibold">Pending Deadlines</p>
+                                <small class="text-muted">Urgent tasks</small>
+                            </div>
+                            <i class="fas fa-clock fa-3x text-warning opacity-75 pulse"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Left Column: Courses & AI Assistant -->
+                <div class="col-lg-6">
+                    <!-- My Courses Section -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h4 class="mb-0 fw-bold"><i class="fas fa-book me-2 text-primary"></i>My Courses</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for course in courses %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="course-card">
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <h6 class="fw-bold text-dark mb-0">{{ course.name }}</h6>
+                                            <span class="badge bg-primary badge-custom">Active</span>
+                                        </div>
+                                        <p class="text-muted small mb-3">{{ course.description|truncatewords:15 }}</p>
+                                        <div class="progress mb-2" style="height: 6px;">
+                                            <div class="progress-bar bg-success" style="width: 65%"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">65% completed</small>
+                                            <a href="{% url 'course_detail' course.id %}" class="btn btn-sm btn-outline-primary btn-link-fix">
+                                                <i class="fas fa-play me-1"></i>Continue
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="col-12 text-center py-4">
+                                    <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                                    <h5>No Courses Enrolled</h5>
+                                    <p class="text-muted">You haven't enrolled in any courses yet.</p>
+                                    <a href="{% url 'student_register' %}" class="btn btn-primary">Enroll Now</a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced AI Assistant Section -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h4 class="mb-0 fw-bold"><i class="fas fa-robot me-2 text-warning"></i>AI Learning Assistant</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="ai-chat-container">
+                                <div class="ai-chat-bubble">
+                                    <strong>🤖 AI Assistant:</strong> Hi {{ student.user.first_name }}! I can help you with programming questions, study tips, and learning guidance. Ask me anything!
+                                </div>
+                                
+                                <div class="ai-response">
+                                    <strong>💡 Try asking:</strong>
+                                    <div class="mt-2">
+                                        <span class="badge quick-tip-badge bg-light text-dark me-1 mb-1" onclick="quickQuestion('what is python')">What is Python?</span>
+                                        <span class="badge quick-tip-badge bg-light text-dark me-1 mb-1" onclick="quickQuestion('java vs python')">Java vs Python</span>
+                                        <span class="badge quick-tip-badge bg-light text-dark me-1 mb-1" onclick="quickQuestion('how to learn programming')">Learn Programming</span>
+                                        <span class="badge quick-tip-badge bg-light text-dark me-1 mb-1" onclick="quickQuestion('python roadmap')">Python Roadmap</span>
+                                        <span class="badge quick-tip-badge bg-light text-dark mb-1" onclick="quickQuestion('web development roadmap')">Web Dev Roadmap</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <div class="input-group">
+                                    <input type="text" id="ai-input" class="form-control" placeholder="Ask about programming, roadmaps, study tips...">
+                                    <button class="btn btn-primary" onclick="sendAIMessage()">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted mt-2 d-block">
+                                    <i class="fas fa-lightbulb me-1"></i>Examples: "What is Python?", "Java basics", "Python roadmap", "Web development guide"
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Middle Column: Study Schedule & Deadlines -->
+                <div class="col-lg-3">
+                    <!-- Study Schedule -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h5 class="mb-0 fw-bold"><i class="fas fa-calendar-alt me-2 text-info"></i>Today's Study Plan</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="study-session">
+                                <strong>📚 9:00 AM - 10:30 AM</strong><br>
+                                <small>Python Programming Basics</small>
+                            </div>
+                            <div class="study-session">
+                                <strong>💻 11:00 AM - 12:30 PM</strong><br>
+                                <small>Web Development Practice</small>
+                            </div>
+                            <div class="study-session">
+                                <strong>📖 2:00 PM - 3:30 PM</strong><br>
+                                <small>Data Structures Revision</small>
+                            </div>
+                            <div class="study-session">
+                                <strong>🔍 4:00 PM - 5:00 PM</strong><br>
+                                <small>Code Review & Debugging</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Deadlines -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h5 class="mb-0 fw-bold"><i class="fas fa-exclamation-triangle me-2 text-danger"></i>Upcoming Deadlines</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="deadline-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Python Project</h6>
+                                        <small>Due: Tomorrow</small>
+                                    </div>
+                                    <span class="badge bg-white text-danger">URGENT</span>
+                                </div>
+                            </div>
+                            
+                            <div class="deadline-item" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Web Assignment</h6>
+                                        <small>Due: 3 days</small>
+                                    </div>
+                                    <span class="badge bg-white text-warning">HIGH</span>
+                                </div>
+                            </div>
+                            
+                            <div class="deadline-item" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Monthly Quiz</h6>
+                                        <small>Due: 1 week</small>
+                                    </div>
+                                    <span class="badge bg-white text-primary">MEDIUM</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Calendar & Quick Actions -->
+                <div class="col-lg-3">
+                    <!-- Calendar -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h5 class="mb-0 fw-bold"><i class="fas fa-calendar me-2 text-success"></i>Study Calendar</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="calendar"></div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h5 class="mb-0 fw-bold"><i class="fas fa-bolt me-2 text-warning"></i>Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <a href="{% url 'student_resources' %}" class="btn btn-outline-primary w-100 mb-2 btn-link-fix">
+                                        <i class="fas fa-download me-1"></i>Resources
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    <a href="{% url 'view_my_progress' %}" class="btn btn-outline-success w-100 mb-2 btn-link-fix">
+                                        <i class="fas fa-chart-line me-1"></i>Progress
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    <a href="{% url 'student_assignments' %}" class="btn btn-outline-warning w-100 mb-2 btn-link-fix">
+                                        <i class="fas fa-tasks me-1"></i>Assignments
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    <a href="{% url 'student_discussions' %}" class="btn btn-outline-info w-100 mb-2 btn-link-fix">
+                                        <i class="fas fa-users me-1"></i>Discussions
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script>
+        // Enhanced AI Knowledge Base with Roadmaps
+        const aiKnowledge = {
+            // Python Knowledge
+            python: {
+                basics: `🐍 What is Python?
+Python is a high-level, interpreted programming language known for its simplicity and readability.
+
+🔑 Key Features:
+• Easy to learn and read
+• Great for beginners
+• Extensive libraries
+• Used in web development, data science, AI, and automation
+
+💡 Example Code:
+<div class="code-block"># Simple Python program
+print("Hello, World!")
+
+# Variables and operations
+name = "Alice"
+age = 25
+print(f"{name} is {age} years old")</div>
+
+🚀 Popular Uses:
+• Web Development (Django, Flask)
+• Data Science & Machine Learning
+• Automation Scripts
+• Scientific Computing`,
+
+                roadmap: `🎯 Python Learning Roadmap:
+
+Phase 1: Basics (2-3 weeks)
+• Variables & Data Types
+• Control Structures
+• Functions
+• Basic I/O Operations
+
+Phase 2: Intermediate (3-4 weeks)
+• Object-Oriented Programming
+• File Handling
+• Error Handling
+• Modules & Packages
+
+Phase 3: Advanced (4-6 weeks)
+• Web Development (Django/Flask)
+• Data Analysis (Pandas, NumPy)
+• APIs & Web Scraping
+• Basic Algorithms
+
+💡 Project Ideas: Todo App, Weather App, Data Analyzer`,
+
+                advantages: `🌟 Python Advantages:
+✅ Easy to learn and read
+✅ Large community support
+✅ Extensive libraries
+✅ Cross-platform compatibility
+✅ Great for rapid development`
+            },
+
+            // Java Knowledge
+            java: {
+                basics: `☕ What is Java?
+Java is a high-level, object-oriented programming language known for its "write once, run anywhere" capability.
+
+🔑 Key Features:
+• Platform independent (JVM)
+• Strongly typed language
+• Automatic memory management
+• Extensive ecosystem
+
+💡 Example Code:
+<div class="code-block">// Simple Java program
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}</div>
+
+🚀 Popular Uses:
+• Enterprise Applications
+• Android App Development
+• Web Applications
+• Big Data Technologies`,
+
+                roadmap: `🎯 Java Learning Roadmap:
+
+Phase 1: Core Java (4-5 weeks)
+• Basic Syntax & Data Types
+• OOP Concepts
+• Exception Handling
+• Collections Framework
+
+Phase 2: Advanced Java (4-6 weeks)
+• Multithreading
+• File I/O
+• JDBC & Databases
+• Network Programming
+
+Phase 3: Enterprise (5-7 weeks)
+• Spring Framework
+• REST APIs
+• Microservices
+• Build Tools (Maven/Gradle)
+
+💡 Project Ideas: Bank System, E-commerce App, Student Management`,
+
+                advantages: `🌟 Java Advantages:
+✅ Platform independent
+✅ Strong memory management
+✅ Excellent performance
+✅ Vast ecosystem
+✅ Great for large-scale projects`
+            },
+
+            // Web Development Knowledge
+            web: {
+                basics: `🌐 What is Web Development?
+Web development involves building and maintaining websites and web applications.
+
+🎯 Three Main Parts:
+1. Frontend (Client-side)
+   • HTML - Structure
+   • CSS - Styling
+   • JavaScript - Interactivity
+
+2. Backend (Server-side)
+   • Server, Database, Application
+   • Python, Java, Node.js, PHP
+
+3. Database
+   • MySQL, PostgreSQL, MongoDB`,
+
+                roadmap: `🎯 Web Development Roadmap:
+
+Phase 1: Frontend (6-8 weeks)
+• HTML5 & Semantic HTML
+• CSS3 & Flexbox/Grid
+• JavaScript Fundamentals
+• Responsive Design
+
+Phase 2: Backend (8-10 weeks)
+• Node.js/Python/Java
+• RESTful APIs
+• Database Design
+• Authentication & Security
+
+Phase 3: Full Stack (4-6 weeks)
+• React/Angular/Vue
+• Deployment (Cloud, VPS)
+• DevOps Basics
+• Performance Optimization
+
+💡 Project Ideas: Portfolio Website, Blog, E-commerce Site`,
+
+                technologies: `🛠️ Web Technologies:
+Frontend: React, Angular, Vue.js
+Backend: Node.js, Django, Spring
+Database: MySQL, MongoDB, PostgreSQL
+Tools: Git, Docker, AWS`
+            },
+
+            // Programming Comparisons
+            comparisons: {
+                javaVsPython: `🤔 Java vs Python:
+
+Python:
+• Easier to learn
+• Faster development
+• Great for data science/AI
+• Dynamic typing
+
+Java:
+• Better performance
+• Platform independent
+• Strong typing
+• Enterprise focus
+
+💡 Recommendation:
+• Start with Python for beginners
+• Choose Java for mobile/enterprise
+• Learn both for full-stack development`
+            },
+
+            // Learning Guidance
+            learning: {
+                howToLearn: `🚀 How to Learn Programming:
+1. Choose One Language First
+2. Learn Basic Syntax & Concepts
+3. Practice Daily (30+ minutes)
+4. Build Small Projects
+5. Learn to Debug
+6. Join Coding Communities
+7. Don't Give Up!`,
+
+                resources: `📚 Learning Resources:
+Free Platforms: freeCodeCamp, Codecademy
+Practice: LeetCode, HackerRank
+Communities: Stack Overflow, GitHub`
+            }
+        };
+
+        // Quick question function
+        function quickQuestion(question) {
+            document.getElementById('ai-input').value = question;
+            sendAIMessage();
+        }
+
+        // Enhanced AI Response Function
+        function getAIResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            // Python Questions
+            if (lowerMessage.includes('python')) {
+                if (lowerMessage.includes('roadmap') || lowerMessage.includes('learning path')) {
+                    return { response: aiKnowledge.python.roadmap, type: 'roadmap' };
+                }
+                if (lowerMessage.includes('what is') || lowerMessage.includes('explain')) {
+                    return { response: aiKnowledge.python.basics, type: 'response' };
+                }
+                if (lowerMessage.includes('advantage')) {
+                    return { response: aiKnowledge.python.advantages, type: 'response' };
+                }
+                return { response: aiKnowledge.python.basics, type: 'response' };
+            }
+
+            // Java Questions
+            if (lowerMessage.includes('java')) {
+                if (lowerMessage.includes('roadmap') || lowerMessage.includes('learning path')) {
+                    return { response: aiKnowledge.java.roadmap, type: 'roadmap' };
+                }
+                if (lowerMessage.includes('what is') || lowerMessage.includes('explain')) {
+                    return { response: aiKnowledge.java.basics, type: 'response' };
+                }
+                if (lowerMessage.includes('advantage')) {
+                    return { response: aiKnowledge.java.advantages, type: 'response' };
+                }
+                return { response: aiKnowledge.java.basics, type: 'response' };
+            }
+
+            // Web Development Questions
+            if (lowerMessage.includes('web') || lowerMessage.includes('html') || lowerMessage.includes('css')) {
+                if (lowerMessage.includes('roadmap') || lowerMessage.includes('learning path')) {
+                    return { response: aiKnowledge.web.roadmap, type: 'roadmap' };
+                }
+                if (lowerMessage.includes('what is') || lowerMessage.includes('explain')) {
+                    return { response: aiKnowledge.web.basics, type: 'response' };
+                }
+                if (lowerMessage.includes('technology')) {
+                    return { response: aiKnowledge.web.technologies, type: 'response' };
+                }
+                return { response: aiKnowledge.web.basics, type: 'response' };
+            }
+
+            // Comparisons
+            if ((lowerMessage.includes('java') && lowerMessage.includes('python')) || 
+                lowerMessage.includes('which') && lowerMessage.includes('better')) {
+                return { response: aiKnowledge.comparisons.javaVsPython, type: 'response' };
+            }
+
+            // Learning Questions
+            if (lowerMessage.includes('learn') && lowerMessage.includes('programming') ||
+                lowerMessage.includes('how to') && lowerMessage.includes('code')) {
+                return { response: aiKnowledge.learning.howToLearn, type: 'response' };
+            }
+
+            if (lowerMessage.includes('resource')) {
+                return { response: aiKnowledge.learning.resources, type: 'response' };
+            }
+
+            // Roadmap requests
+            if (lowerMessage.includes('roadmap') || lowerMessage.includes('learning path')) {
+                return { 
+                    response: `I can provide learning roadmaps for:
+• Python roadmap
+• Java roadmap  
+• Web development roadmap
+• Ask specifically which roadmap you need!`,
+                    type: 'response' 
+                };
+            }
+
+            // Default response
+            return { 
+                response: `I'm here to help with your programming journey! You can ask me about:
+
+🐍 Python:
+• "What is Python?"
+• "Python roadmap"
+• "Python advantages"
+
+☕ Java:
+• "What is Java?"
+• "Java roadmap" 
+• "Java vs Python"
+
+🌐 Web Development:
+• "What is web development?"
+• "Web development roadmap"
+• "Web technologies"
+
+🚀 Learning:
+• "How to learn programming"
+• "Learning resources"
+
+Ask me for specific roadmaps when you need structured learning paths!`,
+                type: 'response'
+            };
+        }
+
+        // Enhanced AI Chat Functionality
+        function sendAIMessage() {
+            const input = document.getElementById('ai-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                // Show user message
+                const chatContainer = document.getElementById('ai-chat-container');
+                const userMsg = document.createElement('div');
+                userMsg.className = 'ai-chat-bubble';
+                userMsg.innerHTML = `<strong>👤 You:</strong> ${message}`;
+                chatContainer.appendChild(userMsg);
+                
+                // Clear input
+                input.value = '';
+                
+                // Show loading
+                const loadingMsg = document.createElement('div');
+                loadingMsg.className = 'ai-response';
+                loadingMsg.innerHTML = `<strong>🤖 AI:</strong> Thinking...`;
+                chatContainer.appendChild(loadingMsg);
+                
+                // Simulate AI thinking
+                setTimeout(() => {
+                    loadingMsg.remove();
+                    const aiResponse = getAIResponse(message);
+                    const aiMsg = document.createElement('div');
+                    aiMsg.className = aiResponse.type === 'roadmap' ? 'ai-roadmap' : 'ai-response';
+                    aiMsg.innerHTML = `<strong>🤖 AI:</strong> ${aiResponse.response}`;
+                    chatContainer.appendChild(aiMsg);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 1000);
+            }
+        }
+
+        // Enter key support for AI chat
+        document.getElementById('ai-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendAIMessage();
+            }
+        });
+
+        // Calendar initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate progress rings
+            const progressRings = document.querySelectorAll('.progress-fill');
+            progressRings.forEach(ring => {
+                const percentage = parseInt(ring.getAttribute('stroke-dasharray').split(',')[0]);
+                ring.style.strokeDasharray = `${percentage}, 100`;
+            });
+            
+            // Add hover effects
+            const cards = document.querySelectorAll('.stat-card, .course-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Initialize Calendar
+            var calendarEl = document.getElementById('calendar');
+            if (calendarEl) {
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek'
+                    },
+                    events: [
+                        {
+                            title: 'Python Project Due',
+                            start: new Date(new Date().setDate(new Date().getDate() + 1)),
+                            color: '#e74c3c'
+                        },
+                        {
+                            title: 'Web Assignment',
+                            start: new Date(new Date().setDate(new Date().getDate() + 3)),
+                            color: '#f39c12'
+                        },
+                        {
+                            title: 'Monthly Quiz',
+                            start: new Date(new Date().setDate(new Date().getDate() + 7)),
+                            color: '#3498db'
+                        },
+                        {
+                            title: 'Study Session',
+                            start: new Date().toISOString().split('T')[0] + 'T09:00:00',
+                            color: '#2ecc71'
+                        }
+                    ],
+                    height: 300
+                });
+                calendar.render();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,604 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration - Planora</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Poppins', sans-serif; 
+        }
+        
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .register-container { 
+            background: #fff; 
+            padding: 40px 30px; 
+            border-radius: 20px; 
+            width: 480px; 
+            max-width: 90%; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1); 
+            position: relative; 
+            overflow: hidden;
+        }
+        
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .register-header h2 { 
+            color: #333; 
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .register-header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .input-group { 
+            position: relative; 
+            margin-bottom: 25px; 
+        }
+        
+        .input-group input { 
+            width: 100%; 
+            padding: 15px 20px; 
+            border: 2px solid #e1e5e9; 
+            border-radius: 12px; 
+            outline: none; 
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .input-group input:focus { 
+            border-color: #667eea;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .input-group input.error { 
+            border-color: #e74c3c;
+            background: #fdf2f2;
+        }
+        
+        .input-group input.success { 
+            border-color: #27ae60;
+            background: #f2fdf2;
+        }
+        
+        .input-group label { 
+            position: absolute; 
+            left: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            color: #888; 
+            font-size: 14px; 
+            pointer-events: none; 
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            padding: 0 8px;
+        }
+        
+        .input-group input:focus + label, 
+        .input-group input:not(:placeholder-shown) + label { 
+            top: -10px; 
+            left: 12px; 
+            font-size: 12px; 
+            color: #667eea; 
+            background: #fff; 
+            font-weight: 500;
+        }
+        
+        /* Simple Course Selection */
+        .courses-section {
+            margin-bottom: 25px;
+        }
+        
+        .courses-section h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .courses-list {
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            background: #f8f9fa;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .course-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e1e5e9;
+            transition: all 0.3s ease;
+        }
+        
+        .course-item:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+        
+        .course-item input {
+            margin-right: 12px;
+            transform: scale(1.2);
+            accent-color: #667eea;
+        }
+        
+        .course-item label {
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .validation-message {
+            font-size: 12px;
+            margin-top: 5px;
+            padding: 0 5px;
+            display: none;
+        }
+        
+        .validation-message.error {
+            color: #e74c3c;
+            display: block;
+        }
+        
+        .password-strength {
+            margin-top: 8px;
+            font-size: 12px;
+            display: none;
+        }
+        
+        .strength-bar {
+            height: 4px;
+            background: #e1e5e9;
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+        }
+        
+        .strength-weak { background: #e74c3c; width: 33%; }
+        .strength-medium { background: #f39c12; width: 66%; }
+        .strength-strong { background: #27ae60; width: 100%; }
+        
+        .submit-btn { 
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 12px; 
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff; 
+            font-size: 16px; 
+            font-weight: 600;
+            cursor: pointer; 
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover:not(:disabled) { 
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .submit-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .messages { 
+            margin-bottom: 20px; 
+            padding: 12px 15px;
+            border-radius: 10px;
+            font-size: 14px; 
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .messages.error { 
+            background: #ffe6e6;
+            color: #d63031;
+            border: 1px solid #ff7675;
+        }
+        
+        .messages.success { 
+            background: #e6f7e6;
+            color: #27ae60;
+            border: 1px solid #58ca7e;
+        }
+        
+        .requirement-list {
+            font-size: 11px;
+            color: #666;
+            margin-top: 3px;
+            padding-left: 15px;
+        }
+        
+        .requirement-list li {
+            margin: 2px 0;
+        }
+        
+        .requirement-list .valid {
+            color: #27ae60;
+        }
+        
+        .requirement-list .invalid {
+            color: #e74c3c;
+        }
+        
+        @media (max-width: 480px) { 
+            .register-container { 
+                padding: 30px 20px; 
+            }
+            
+            .register-header h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="register-container">
+    <div class="register-header">
+        <h2>Join Planora</h2>
+        <p>Start your learning journey today</p>
+    </div>
+
+    {% if messages %}
+        <div class="messages {% if messages.0.tags %}{{ messages.0.tags }}{% endif %}">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'student_register' %}" id="registrationForm">
+        {% csrf_token %}
+
+        <div class="input-group">
+            <input type="text" name="first_name" placeholder=" " required minlength="2" maxlength="50" pattern="[A-Za-z ]+" title="Only letters and spaces allowed">
+            <label><i class="fas fa-user me-2"></i>First Name</label>
+            <div class="validation-message" id="firstNameError">Please enter a valid first name (letters only, 2-50 characters)</div>
+        </div>
+
+        <div class="input-group">
+            <input type="text" name="last_name" placeholder=" " required minlength="2" maxlength="50" pattern="[A-Za-z ]+" title="Only letters and spaces allowed">
+            <label><i class="fas fa-user me-2"></i>Last Name</label>
+            <div class="validation-message" id="lastNameError">Please enter a valid last name (letters only, 2-50 characters)</div>
+        </div>
+
+        <div class="input-group">
+            <input type="text" name="username" placeholder=" " required minlength="3" maxlength="30" pattern="[A-Za-z0-9_]+" title="Only letters, numbers, and underscores allowed">
+            <label><i class="fas fa-at me-2"></i>Username</label>
+            <div class="validation-message" id="usernameError">Username must be 3-30 characters (letters, numbers, underscores only)</div>
+        </div>
+
+        <div class="input-group">
+            <input type="email" name="email" placeholder=" " required pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address">
+            <label><i class="fas fa-envelope me-2"></i>Email</label>
+            <div class="validation-message" id="emailError">Please enter a valid email address</div>
+        </div>
+
+        <div class="input-group">
+            <input type="password" name="password" placeholder=" " required minlength="8" id="password">
+            <label><i class="fas fa-lock me-2"></i>Password</label>
+            <div class="password-strength" id="passwordStrength">
+                <div>Password Strength: <span id="strengthText">Weak</span></div>
+                <div class="strength-bar">
+                    <div class="strength-fill" id="strengthFill"></div>
+                </div>
+            </div>
+            <ul class="requirement-list" id="passwordRequirements">
+                <li id="reqLength" class="invalid">At least 8 characters</li>
+                <li id="reqUpper" class="invalid">One uppercase letter</li>
+                <li id="reqLower" class="invalid">One lowercase letter</li>
+                <li id="reqNumber" class="invalid">One number</li>
+                <li id="reqSpecial" class="invalid">One special character</li>
+            </ul>
+        </div>
+
+        <div class="input-group">
+            <input type="password" name="confirm_password" placeholder=" " required id="confirmPassword">
+            <label><i class="fas fa-lock me-2"></i>Confirm Password</label>
+            <div class="validation-message" id="confirmPasswordError">Passwords do not match</div>
+        </div>
+
+        <div class="input-group">
+            <input type="tel" name="mobile" placeholder=" " required pattern="[0-9]{10}" title="Enter 10 digit mobile number" maxlength="10">
+            <label><i class="fas fa-phone me-2"></i>Mobile Number</label>
+            <div class="validation-message" id="mobileError">Please enter a valid 10-digit mobile number</div>
+        </div>
+
+        <div class="input-group">
+            <input type="number" name="age" placeholder=" " required min="10" max="100">
+            <label><i class="fas fa-birthday-cake me-2"></i>Age</label>
+            <div class="validation-message" id="ageError">Age must be between 10 and 100</div>
+        </div>
+
+        <!-- Simple Course Selection -->
+        <div class="courses-section">
+            <h3><i class="fas fa-book me-2"></i>Select Your Courses</h3>
+            <div class="courses-list">
+                {% for course in courses %}
+                <div class="course-item">
+                    <input type="checkbox" name="courses" value="{{ course.id }}" id="course{{ course.id }}" class="course-checkbox">
+                    <label for="course{{ course.id }}">{{ course.name }}</label>
+                </div>
+                {% empty %}
+                <div style="color: #666; text-align: center; padding: 20px;">
+                    No courses available at the moment
+                </div>
+                {% endfor %}
+            </div>
+            <div class="validation-message" id="courseError">Please select at least one course</div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn" disabled>
+            <i class="fas fa-user-plus me-2"></i>Create Account
+        </button>
+
+        <div class="login-link">
+            Already have an account? <a href="{% url 'student_login' %}">Sign In</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('registrationForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const inputs = form.querySelectorAll('input[required]');
+        const courseCheckboxes = document.querySelectorAll('.course-checkbox');
+        
+        // Simple course selection - click anywhere on the course item
+        document.querySelectorAll('.course-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (e.target.type !== 'checkbox') {
+                    const checkbox = this.querySelector('input[type="checkbox"]');
+                    checkbox.checked = !checkbox.checked;
+                    validateCourseSelection();
+                    checkFormValidity();
+                }
+            });
+        });
+
+        // Validation functions
+        function validateName(name) {
+            return /^[A-Za-z ]{2,50}$/.test(name.trim());
+        }
+        
+        function validateUsername(username) {
+            return /^[A-Za-z0-9_]{3,30}$/.test(username.trim());
+        }
+        
+        function validateEmail(email) {
+            return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim());
+        }
+        
+        function validateMobile(mobile) {
+            return /^[0-9]{10}$/.test(mobile.trim());
+        }
+        
+        function validateAge(age) {
+            const ageNum = parseInt(age);
+            return ageNum >= 10 && ageNum <= 100;
+        }
+        
+        function validatePassword(password) {
+            const requirements = {
+                length: password.length >= 8,
+                upper: /[A-Z]/.test(password),
+                lower: /[a-z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+            };
+            
+            // Update requirement list
+            document.getElementById('reqLength').className = requirements.length ? 'valid' : 'invalid';
+            document.getElementById('reqUpper').className = requirements.upper ? 'valid' : 'invalid';
+            document.getElementById('reqLower').className = requirements.lower ? 'valid' : 'invalid';
+            document.getElementById('reqNumber').className = requirements.number ? 'valid' : 'invalid';
+            document.getElementById('reqSpecial').className = requirements.special ? 'valid' : 'invalid';
+            
+            // Calculate strength
+            const metRequirements = Object.values(requirements).filter(Boolean).length;
+            const strengthFill = document.getElementById('strengthFill');
+            const strengthText = document.getElementById('strengthText');
+            
+            if (metRequirements <= 2) {
+                strengthFill.className = 'strength-fill strength-weak';
+                strengthText.textContent = 'Weak';
+            } else if (metRequirements <= 4) {
+                strengthFill.className = 'strength-fill strength-medium';
+                strengthText.textContent = 'Medium';
+            } else {
+                strengthFill.className = 'strength-fill strength-strong';
+                strengthText.textContent = 'Strong';
+            }
+            
+            // Show/hide strength meter
+            const strengthMeter = document.getElementById('passwordStrength');
+            strengthMeter.style.display = password ? 'block' : 'none';
+            
+            return metRequirements >= 3;
+        }
+        
+        function validateCourseSelection() {
+            const selected = Array.from(courseCheckboxes).filter(cb => cb.checked);
+            const courseError = document.getElementById('courseError');
+            
+            if (selected.length === 0) {
+                courseError.style.display = 'block';
+                return false;
+            } else {
+                courseError.style.display = 'none';
+                return true;
+            }
+        }
+        
+        function validateField(field) {
+            const errorElement = document.getElementById(field.name + 'Error');
+            let isValid = true;
+            let value = field.value.trim();
+            
+            switch(field.name) {
+                case 'first_name':
+                case 'last_name':
+                    isValid = validateName(value);
+                    break;
+                case 'username':
+                    isValid = validateUsername(value);
+                    break;
+                case 'email':
+                    isValid = validateEmail(value);
+                    break;
+                case 'password':
+                    isValid = validatePassword(value);
+                    break;
+                case 'confirm_password':
+                    const password = document.getElementById('password').value;
+                    isValid = value === password;
+                    break;
+                case 'mobile':
+                    isValid = validateMobile(value);
+                    break;
+                case 'age':
+                    isValid = validateAge(value);
+                    break;
+            }
+            
+            // Update UI
+            if (isValid) {
+                field.classList.remove('error');
+                field.classList.add('success');
+                if (errorElement) errorElement.style.display = 'none';
+            } else {
+                field.classList.remove('success');
+                field.classList.add('error');
+                if (errorElement) errorElement.style.display = 'block';
+            }
+            
+            return isValid;
+        }
+        
+        function checkFormValidity() {
+            let allValid = true;
+            
+            // Check all required fields
+            inputs.forEach(input => {
+                if (!validateField(input)) {
+                    allValid = false;
+                }
+            });
+            
+            // Check course selection
+            if (!validateCourseSelection()) {
+                allValid = false;
+            }
+            
+            // Enable/disable submit button
+            submitBtn.disabled = !allValid;
+        }
+        
+        // Real-time validation for each input
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                validateField(this);
+                checkFormValidity();
+            });
+            
+            input.addEventListener('blur', function() {
+                validateField(this);
+                checkFormValidity();
+            });
+        });
+        
+        // Course checkbox change
+        courseCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                validateCourseSelection();
+                checkFormValidity();
+            });
+        });
+        
+        // Password confirmation real-time check
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            const errorElement = document.getElementById('confirmPasswordError');
+            
+            if (confirmPassword && password !== confirmPassword) {
+                this.classList.add('error');
+                this.classList.remove('success');
+                errorElement.style.display = 'block';
+            } else if (confirmPassword) {
+                this.classList.remove('error');
+                this.classList.add('success');
+                errorElement.style.display = 'none';
+            }
+        });
+        
+        // Form submission final validation
+        form.addEventListener('submit', function(e) {
+            if (submitBtn.disabled) {
+                e.preventDefault();
+                alert('Please fix all validation errors before submitting.');
+            }
+        });
+        
+        // Initial check
+        checkFormValidity();
+    });
+</script>
+
+</body>
+</html>

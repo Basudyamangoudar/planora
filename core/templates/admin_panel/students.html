@@ -1,0 +1,177 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% load static %}
+
+{% block title %}Manage Students - Planora Admin{% endblock %}
+{% block page_title %}Student Management{% endblock %}
+
+{% block content %}
+<!-- Student Requests Alert -->
+{% if pending_requests_count > 0 %}
+<div class="alert alert-warning alert-dismissible fade show">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    You have <strong>{{ pending_requests_count }}</strong> pending student registration(s).
+    <a href="{% url 'student_requests' %}" class="alert-link">Review now</a>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endif %}
+
+<!-- Students Table -->
+<div class="card">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Approved Students ({{ students|length }})</h5>
+        <a href="{% url 'student_requests' %}" class="btn btn-light btn-sm">
+            <i class="fas fa-user-clock me-1"></i>Pending Requests
+            {% if pending_requests_count > 0 %}
+            <span class="badge bg-danger ms-1">{{ pending_requests_count }}</span>
+            {% endif %}
+        </a>
+    </div>
+    <div class="card-body">
+        {% if students %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Student Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>Age</th>
+                        <th>Courses</th>
+                        <th>Progress</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.id }}</td>
+                        <td>
+                            <strong>{{ student.user.get_full_name }}</strong>
+                        </td>
+                        <td>{{ student.user.username }}</td>
+                        <td>{{ student.user.email }}</td>
+                        <td>{{ student.mobile }}</td>
+                        <td>{{ student.age }}</td>
+                        <td>
+                            {% for course in student.courses.all %}
+                            <span class="badge bg-primary">{{ course.name }}</span>
+                            {% empty %}
+                            <span class="text-muted">No courses</span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% with student.progress_set.first as progress %}
+                            {% if progress %}
+                            <div class="progress" style="height: 20px; width: 100px;">
+                                <div class="progress-bar {% if progress.percentage >= 80 %}bg-success{% elif progress.percentage >= 50 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                     role="progressbar" 
+                                     style="width: {{ progress.percentage }}%">
+                                    {{ progress.percentage }}%
+                                </div>
+                            </div>
+                            {% else %}
+                            <span class="text-muted">No data</span>
+                            {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'edit_student' student.id %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ student.id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+
+                            <!-- Delete Confirmation Modal -->
+                            <div class="modal fade" id="deleteModal{{ student.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-danger text-white">
+                                            <h5 class="modal-title">Confirm Delete</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete student <strong>{{ student.user.get_full_name }}</strong>?
+                                            <br><small class="text-muted">This action cannot be undone.</small>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form method="POST" action="{% url 'delete_student' student.id %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-danger">Delete Student</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+            <h5>No Students Found</h5>
+            <p class="text-muted">There are no approved students in the system yet.</p>
+            <a href="{% url 'student_requests' %}" class="btn btn-primary">
+                <i class="fas fa-user-clock me-1"></i>Check Pending Requests
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="stat-card" style="border-left-color: #2ecc71;">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h4 class="text-success">{{ students|length }}</h4>
+                    <p class="mb-0">Total Students</p>
+                </div>
+                <i class="fas fa-users fa-2x text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="border-left-color: #e74c3c;">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h4 class="text-danger">{{ pending_requests_count }}</h4>
+                    <p class="mb-0">Pending Requests</p>
+                </div>
+                <i class="fas fa-user-clock fa-2x text-danger"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="border-left-color: #3498db;">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h4 class="text-primary">{{ total_courses }}</h4>
+                    <p class="mb-0">Available Courses</p>
+                </div>
+                <i class="fas fa-book fa-2x text-primary"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="border-left-color: #f39c12;">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h4 class="text-warning">{{ average_progress }}%</h4>
+                    <p class="mb-0">Avg Progress</p>
+                </div>
+                <i class="fas fa-chart-line fa-2x text-warning"></i>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

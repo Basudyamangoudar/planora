@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Contact - Planora{% endblock %}
+
+{% block content %}
+<style>
+    .contact-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 100px 0;
+        text-align: center;
+    }
+    
+    .contact-section {
+        padding: 80px 0;
+        background: #f8f9fa;
+    }
+    
+    .contact-card {
+        background: white;
+        border-radius: 20px;
+        padding: 50px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    
+    .contact-info {
+        text-align: center;
+    }
+    
+    .contact-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 2rem;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .contact-item:hover .contact-icon {
+        transform: translateY(-5px) scale(1.1);
+    }
+    
+    .contact-form {
+        background: white;
+        border-radius: 20px;
+        padding: 50px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 12px 15px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .btn-contact {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 15px 40px;
+        border-radius: 50px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .btn-contact:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    .map-section {
+        padding: 60px 0;
+        background: white;
+    }
+    
+    .map-placeholder {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 15px;
+        padding: 60px 20px;
+        text-align: center;
+        color: white;
+    }
+    
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 30px;
+    }
+    
+    .social-icon {
+        width: 50px;
+        height: 50px;
+        background: #667eea;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .social-icon:hover {
+        transform: translateY(-3px);
+        background: #764ba2;
+        color: white;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease;
+    }
+    
+    .animate-on-scroll.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="contact-hero">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-4">Get In Touch</h1>
+        <p class="lead" style="font-size: 1.3rem;">
+            We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+        </p>
+    </div>
+</section>
+
+<!-- Contact Information -->
+<section class="contact-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="contact-card animate-on-scroll">
+                    <div class="row">
+                        <div class="col-md-4 contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <h5>Email Us</h5>
+                            <p class="text-muted">support@planora.com</p>
+                            <small>We'll reply within 24 hours</small>
+                        </div>
+                        <div class="col-md-4 contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <h5>Call Us</h5>
+                            <p class="text-muted">+91 98765 43210</p>
+                            <small>Mon-Fri from 9am to 6pm</small>
+                        </div>
+                        <div class="col-md-4 contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h5>Visit Us</h5>
+                            <p class="text-muted">Basaveshwar Engineering College</p>
+                            <small>Bagalkote, Karnataka</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Contact Form -->
+            <div class="col-lg-8">
+                <div class="contact-form animate-on-scroll">
+                    <h3 class="mb-4">Send us a Message</h3>
+                    <form id="contactForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" placeholder="Your Name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="email" class="form-control" placeholder="Your Email" required>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Subject">
+                        <textarea class="form-control" rows="5" placeholder="Your Message" required></textarea>
+                        <button type="submit" class="btn btn-contact">
+                            <i class="fas fa-paper-plane me-2"></i>Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Additional Info -->
+            <div class="col-lg-4">
+                <div class="contact-info animate-on-scroll">
+                    <div class="contact-card h-100">
+                        <h4 class="mb-4">Quick Support</h4>
+                        
+                        <div class="mb-4">
+                            <h6><i class="fas fa-clock text-primary me-2"></i>Response Time</h6>
+                            <p class="text-muted small">Typically within 2-4 hours during business days</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6><i class="fas fa-user-graduate text-primary me-2"></i>Student Support</h6>
+                            <p class="text-muted small">Priority support for enrolled students</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6><i class="fas fa-comments text-primary me-2"></i>Live Chat</h6>
+                            <p class="text-muted small">Available during college hours</p>
+                        </div>
+                        
+                        <div class="social-links">
+                            <a href="#" class="social-icon">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="social-icon">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="social-icon">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="#" class="social-icon">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="map-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="fw-bold">Find Us</h2>
+                <p class="lead text-muted">Visit our campus at Basaveshwar Engineering College, Bagalkote</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="map-placeholder animate-on-scroll">
+                    <i class="fas fa-map fa-3x mb-3"></i>
+                    <h4>Basaveshwar Engineering College</h4>
+                    <p class="mb-2">Bagalkote, Karnataka - 587103</p>
+                    <p>Affiliated to Visvesvaraya Technological University</p>
+                    <button class="btn btn-light mt-3">
+                        <i class="fas fa-directions me-2"></i>Get Directions
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Form submission handling
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show success message
+        alert('Thank you for your message! We will get back to you soon.');
+        this.reset();
+    });
+    
+    // Scroll animations
+    function checkScroll() {
+        const elements = document.querySelectorAll('.animate-on-scroll');
+        elements.forEach(element => {
+            const elementTop = element.getBoundingClientRect().top;
+            const elementVisible = 150;
+            
+            if (elementTop < window.innerHeight - elementVisible) {
+                element.classList.add('visible');
+            }
+        });
+    }
+    
+    window.addEventListener('scroll', checkScroll);
+    window.addEventListener('load', checkScroll);
+    
+    // Add hover effects
+    document.querySelectorAll('.contact-item').forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+</script>
+{% endblock %}

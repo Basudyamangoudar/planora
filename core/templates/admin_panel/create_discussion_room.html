@@ -1,0 +1,66 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% load static %}
+
+{% block title %}Create Discussion Room - Planora Admin{% endblock %}
+
+{% block page_title %}Create Discussion Room{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Discussion Room Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="course" class="form-label">Select Course</label>
+                        <select name="course" id="course" class="form-select" required>
+                            <option value="">Choose a course...</option>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Room Title</label>
+                        <input type="text" name="title" id="title" class="form-control" placeholder="e.g., Python Basics Discussion" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea name="description" id="description" class="form-control" rows="4" placeholder="Describe what this discussion room is about..." required></textarea>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Create Discussion Room
+                        </button>
+                        <a href="{% url 'admin_discussions' %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0"><i class="fas fa-lightbulb me-2"></i>Tips</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small">
+                    <li class="mb-2">💡 Create separate rooms for different topics</li>
+                    <li class="mb-2">💡 Use clear, descriptive titles</li>
+                    <li class="mb-2">💡 Encourage student participation</li>
+                    <li class="mb-2">💡 Monitor discussions regularly</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

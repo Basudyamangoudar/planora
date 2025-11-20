@@ -1,0 +1,287 @@
+{% extends 'admin_panel/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Resource</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Display form errors -->
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Please correct the following errors:</strong>
+                        <ul class="mb-0">
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <li>{{ field|title }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <!-- Display messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.title.id_for_label }}" class="form-label fw-bold">Title *</label>
+                                    {{ form.title }}
+                                    <div class="form-text">Enter a descriptive title for the resource</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.resource_type.id_for_label }}" class="form-label fw-bold">Resource Type *</label>
+                                    {{ form.resource_type }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label fw-bold">Description</label>
+                            {{ form.description }}
+                            <div class="form-text">Provide a brief description of this resource</div>
+                        </div>
+
+                        <!-- Show current file if exists -->
+                        {% if resource.pdf_file %}
+                        <div class="alert alert-info">
+                            <strong>Current PDF:</strong> {{ resource.pdf_file.name }}
+                        </div>
+                        {% endif %}
+
+                        {% if resource.video_file %}
+                        <div class="alert alert-info">
+                            <strong>Current Video:</strong> {{ resource.video_file.name }}
+                        </div>
+                        {% endif %}
+
+                        <!-- Conditional fields based on resource type -->
+                        <div id="pdf-field" class="resource-field">
+                            <div class="form-group mb-3">
+                                <label for="{{ form.pdf_file.id_for_label }}" class="form-label fw-bold">PDF File</label>
+                                {{ form.pdf_file }}
+                                <div class="form-text">Upload a new PDF file to replace the current one</div>
+                            </div>
+                        </div>
+                        
+                        <div id="video-field" class="resource-field">
+                            <div class="form-group mb-3">
+                                <label for="{{ form.video_file.id_for_label }}" class="form-label fw-bold">Video File</label>
+                                {{ form.video_file }}
+                                <div class="form-text">Upload a new video file to replace the current one</div>
+                            </div>
+                        </div>
+                        
+                        <div id="link-fields" class="resource-field">
+                            <div class="form-group mb-3">
+                                <label for="{{ form.url.id_for_label }}" class="form-label fw-bold">URL</label>
+                                {{ form.url }}
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    For YouTube: Paste the full YouTube URL<br>
+                                    For external links: Paste the complete website URL
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.subject.id_for_label }}" class="form-label fw-bold">Subject *</label>
+                                    {{ form.subject }}
+                                    <div class="form-text">e.g., Mathematics, Science, English</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.grade_level.id_for_label }}" class="form-label fw-bold">Grade Level *</label>
+                                    {{ form.grade_level }}
+                                    <div class="form-text">e.g., Grade 10, Class 12</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-warning px-4">
+                                <i class="fas fa-save me-2"></i>Update Resource
+                            </button>
+                            <a href="{% url 'resources' %}" class="btn btn-outline-secondary px-4">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+/* Same CSS as add_resource.html */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+    padding: 1.5rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+.form-text {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.btn {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    border: none;
+    color: #000;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #e0a800, #e55a00);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+    color: #000;
+}
+
+.btn-outline-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.2);
+}
+
+.resource-field {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #4e73df;
+}
+
+/* Required field indicator */
+.form-label[for*="title"]::after,
+.form-label[for*="resource_type"]::after,
+.form-label[for*="subject"]::after,
+.form-label[for*="grade_level"]::after {
+    content: " *";
+    color: #dc3545;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .d-flex.gap-2 {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const resourceType = document.getElementById('{{ form.resource_type.id_for_label }}');
+    const pdfField = document.getElementById('pdf-field');
+    const videoField = document.getElementById('video-field');
+    const linkFields = document.getElementById('link-fields');
+    
+    function toggleFields() {
+        // Hide all fields first
+        [pdfField, videoField, linkFields].forEach(field => {
+            if (field) {
+                field.style.display = 'none';
+            }
+        });
+        
+        // Show relevant field based on selection
+        switch(resourceType.value) {
+            case 'pdf':
+                if (pdfField) pdfField.style.display = 'block';
+                break;
+            case 'video':
+                if (videoField) videoField.style.display = 'block';
+                break;
+            case 'youtube':
+            case 'link':
+                if (linkFields) linkFields.style.display = 'block';
+                break;
+        }
+    }
+    
+    // Initial toggle
+    toggleFields();
+    
+    // Toggle on change
+    resourceType.addEventListener('change', toggleFields);
+});
+</script>
+{% endblock %}

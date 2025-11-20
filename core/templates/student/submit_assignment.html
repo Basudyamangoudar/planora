@@ -1,0 +1,310 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Assignment - Planora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3498db;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin: 20px;
+            overflow: hidden;
+        }
+        
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .assignment-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .avatar-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+        }
+        
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{% url 'student_dashboard' %}">
+                <i class="fas fa-graduation-cap me-2"></i>Planora Learning
+            </a>
+            <div class="navbar-nav ms-auto align-items-center">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                        <div class="avatar-circle me-2">
+                            {{ student.user.first_name|first }}{{ student.user.last_name|first }}
+                        </div>
+                        <span>Welcome, {{ student.user.first_name }}!</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'student_dashboard' %}"><i class="fas fa-home me-2"></i>Dashboard</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="{% url 'student_logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="container-fluid py-4">
+            <!-- Header -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="fw-bold text-dark"><i class="fas fa-upload me-2 text-primary"></i>Submit Assignment</h1>
+                        <a href="{% url 'student_assignments' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Assignments
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Assignment Details -->
+                <div class="col-lg-4 mb-4">
+                    <div class="assignment-card">
+                        <h4 class="fw-bold text-dark mb-3">{{ student_assignment.assignment.title }}</h4>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-primary">Course:</h6>
+                            <p class="mb-2">{{ student_assignment.assignment.course.name }}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-primary">Assignment Type:</h6>
+                            <p class="mb-2">
+                                <span class="badge bg-primary">
+                                    {{ student_assignment.assignment.assignment_type|title }}
+                                </span>
+                            </p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-primary">Due Date:</h6>
+                            <p class="mb-2">
+                                <i class="fas fa-clock me-2 text-warning"></i>
+                                {{ student_assignment.assignment.due_date|date:"M d, Y H:i" }}
+                            </p>
+                            {% if student_assignment.assignment.is_overdue %}
+                            <span class="badge bg-danger">Overdue</span>
+                            {% else %}
+                            <span class="badge 
+                                {% if student_assignment.assignment.days_until_due <= 2 %}bg-warning
+                                {% else %}bg-success{% endif %}">
+                                Due in {{ student_assignment.assignment.days_until_due }} days
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-primary">Maximum Points:</h6>
+                            <p class="mb-2">{{ student_assignment.assignment.max_points }} points</p>
+                        </div>
+                        
+                        {% if student_assignment.assignment.instructions %}
+                        <div class="mb-3">
+                            <h6 class="text-primary">Instructions:</h6>
+                            <p class="mb-2">{{ student_assignment.assignment.instructions }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if student_assignment.assignment.resources %}
+                        <div class="mb-3">
+                            <h6 class="text-primary">Resources:</h6>
+                            <p class="mb-2">{{ student_assignment.assignment.resources }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Current Submission Status -->
+                    <div class="assignment-card">
+                        <h5 class="fw-bold text-dark mb-3">Submission Status</h5>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-primary">Current Status:</h6>
+                            <span class="badge 
+                                {% if student_assignment.status == 'not_started' %}bg-secondary
+                                {% elif student_assignment.status == 'in_progress' %}bg-warning
+                                {% elif student_assignment.status == 'submitted' %}bg-success
+                                {% else %}bg-info{% endif %}">
+                                {{ student_assignment.status|title }}
+                            </span>
+                        </div>
+                        
+                        {% if student_assignment.submitted_at %}
+                        <div class="mb-3">
+                            <h6 class="text-primary">Submitted At:</h6>
+                            <p class="mb-2">{{ student_assignment.submitted_at|date:"M d, Y H:i" }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if student_assignment.grade %}
+                        <div class="mb-3">
+                            <h6 class="text-primary">Grade:</h6>
+                            <p class="mb-2 fw-bold">{{ student_assignment.grade }}/{{ student_assignment.assignment.max_points }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if student_assignment.feedback %}
+                        <div class="mb-3">
+                            <h6 class="text-primary">Instructor Feedback:</h6>
+                            <p class="mb-2">{{ student_assignment.feedback }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Submission Form -->
+                <div class="col-lg-8">
+                    <div class="assignment-card">
+                        <h4 class="fw-bold text-dark mb-3">Submit Your Work</h4>
+                        
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            {% if form.errors %}
+                            <div class="alert alert-danger">
+                                <strong>Please correct the errors below:</strong>
+                                <ul>
+                                    {% for field, errors in form.errors.items %}
+                                        {% for error in errors %}
+                                            <li>{{ field|title }}: {{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+
+                            <!-- Text Submission -->
+                            <div class="mb-4">
+                                <label for="{{ form.submission_text.id_for_label }}" class="form-label fw-bold">
+                                    Written Submission <small class="text-muted">(Optional)</small>
+                                </label>
+                                {{ form.submission_text }}
+                                <div class="form-text">
+                                    Write your assignment directly here, or upload a file below.
+                                </div>
+                            </div>
+
+                            <!-- File Upload -->
+                            <div class="mb-4">
+                                <label for="{{ form.submitted_file.id_for_label }}" class="form-label fw-bold">
+                                    File Upload <small class="text-muted">(Optional)</small>
+                                </label>
+                                {{ form.submitted_file }}
+                                <div class="form-text">
+                                    Upload your assignment file (PDF, Word, ZIP, etc.). Maximum file size: 10MB.
+                                </div>
+                                
+                                {% if student_assignment.submitted_file %}
+                                <div class="mt-2">
+                                    <small class="text-muted">Current file: </small>
+                                    <a href="{{ student_assignment.submitted_file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-download me-1"></i>Download Current File
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Submission Guidelines -->
+                            <div class="alert alert-info">
+                                <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Submission Guidelines</h6>
+                                <ul class="mb-0 small">
+                                    <li>You can submit both text and a file, or just one of them</li>
+                                    <li>Make sure your submission meets all assignment requirements</li>
+                                    <li>You can resubmit until the due date</li>
+                                    <li>Late submissions may be subject to penalties</li>
+                                </ul>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <a href="{% url 'student_assignments' %}" class="btn btn-secondary">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-2"></i>Submit Assignment
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Auto-resize textarea
+        document.addEventListener('DOMContentLoaded', function() {
+            const textarea = document.getElementById('{{ form.submission_text.id_for_label }}');
+            if (textarea) {
+                textarea.style.minHeight = '200px';
+                textarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

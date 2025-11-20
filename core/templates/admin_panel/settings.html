@@ -1,0 +1,148 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% load static %}
+
+{% block title %}Admin Settings - Planora{% endblock %}
+{% block page_title %}System Settings{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <!-- System Information -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">System Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <strong>Total Students:</strong>
+                            <span class="float-end badge bg-primary">{{ total_students }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Available Courses:</strong>
+                            <span class="float-end badge bg-success">{{ total_courses }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Total Resources:</strong>
+                            <span class="float-end badge bg-warning">{{ total_resources }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <strong>Pending Requests:</strong>
+                            <span class="float-end badge bg-danger">{{ pending_requests }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>System Status:</strong>
+                            <span class="float-end badge bg-success">Online</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Last Backup:</strong>
+                            <span class="float-end text-muted">Never</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'add_course' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-plus-circle me-2"></i>Add New Course
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'student_requests' %}" class="btn btn-outline-success w-100">
+                            <i class="fas fa-user-check me-2"></i>Manage Requests
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'add_resource' %}" class="btn btn-outline-info w-100">
+                            <i class="fas fa-folder-plus me-2"></i>Add Resources
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'admin_notifications' %}" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-bell me-2"></i>Send Notification
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- System Configuration -->
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">System Configuration</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Auto-approve Students</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" disabled>
+                        <label class="form-check-label text-muted">Disabled</label>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Email Notifications</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" disabled>
+                        <label class="form-check-label text-muted">Disabled</label>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Progress Tracking</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" checked disabled>
+                        <label class="form-check-label text-muted">Enabled</label>
+                    </div>
+                </div>
+
+                <hr>
+                
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary" disabled>
+                        <i class="fas fa-save me-2"></i>Save Settings
+                    </button>
+                    <button class="btn btn-outline-danger" disabled>
+                        <i class="fas fa-database me-2"></i>Backup Database
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Danger Zone -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Danger Zone</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">These actions are irreversible. Please proceed with caution.</p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    <button class="btn btn-outline-danger" disabled>
+                        <i class="fas fa-trash me-2"></i>Clear All Data
+                    </button>
+                    <button class="btn btn-outline-warning" disabled>
+                        <i class="fas fa-user-slash me-2"></i>Remove All Students
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

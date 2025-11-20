@@ -1,0 +1,34 @@
+/* General Hero Section */
+.hero {
+    background: linear-gradient(135deg, #00e0ff, #0077ff);
+    color: white;
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Navbar styling */
+.navbar-brand {
+    font-size: 1.6rem;
+}
+
+.btn-primary {
+    background: #0077ff;
+    border: none;
+}
+
+.btn-outline-primary {
+    border-color: #0077ff;
+    color: #0077ff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #0077ff;
+    color: white;
+}
+
+/* Card shadow for auth forms */
+.card {
+    border-radius: 12px;
+}

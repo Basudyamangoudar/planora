@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin 99Dashboard</title>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'admin_dashboard' %}">Dashboard</a> |
+        <a href="{% url 'students' %}">Students</a> |
+        <a href="{% url 'admin_courses' %}">Courses</a> |
+        <a href="{% url 'resources' %}">Resources</a> |
+        <a href="{% url 'student_progress' %}">Progress</a> |
+        <a href="{% url 'admin_settings' %}">Settings</a> |
+        <a href="{% url 'admin_logout' %}">Logout</a>
+    </nav>
+    <hr>
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: green;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,92 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Planora Admin{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card" style="border-left-color: #e74c3c;">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h4 class="text-danger">{{ pending_requests_count }}</h4>
+                    <p class="mb-0">Pending Requests</p>
+                </div>
+                <i class="fas fa-user-clock fa-2x text-danger"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="border-left-color: #2ecc71;">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h4 class="text-success">{{ total_students }}</h4>
+                    <p class="mb-0">Total Students</p>
+                </div>
+                <i class="fas fa-users fa-2x text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="border-left-color: #3498db;">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h4 class="text-primary">{{ total_courses }}</h4>
+                    <p class="mb-0">Total Courses</p>
+                </div>
+                <i class="fas fa-book fa-2x text-primary"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="border-left-color: #f39c12;">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h4 class="text-warning">{{ total_resources }}</h4>
+                    <p class="mb-0">Resources</p>
+                </div>
+                <i class="fas fa-file fa-2x text-warning"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'student_requests' %}" class="btn btn-outline-danger">
+                        <i class="fas fa-user-clock me-2"></i>
+                        Review Student Requests
+                    </a>
+                    <a href="{% url 'students' %}" class="btn btn-outline-success">
+                        <i class="fas fa-users me-2"></i>Manage Students
+                    </a>
+                    <a href="{% url 'admin_courses' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-book me-2"></i>Manage Courses
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">System Overview</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Status:</strong> <span class="badge bg-success">All Systems Operational</span></p>
+                <p><strong>Last Login:</strong> {% now "F j, Y, g:i a" %}</p>
+                <p><strong>Active Session:</strong> {{ user.username }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

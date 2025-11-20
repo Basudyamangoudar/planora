@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login - Planora</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Poppins', sans-serif; 
+        }
+        
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .login-container { 
+            background: #fff; 
+            padding: 40px 30px; 
+            border-radius: 20px; 
+            width: 400px; 
+            max-width: 90%; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1); 
+            position: relative; 
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .login-container:hover {
+            transform: translateY(-5px);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h2 { 
+            color: #333; 
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .input-group { 
+            position: relative; 
+            margin-bottom: 25px; 
+        }
+        
+        .input-group input { 
+            width: 100%; 
+            padding: 15px 20px; 
+            border: 2px solid #e1e5e9; 
+            border-radius: 12px; 
+            outline: none; 
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .input-group input:focus { 
+            border-color: #667eea;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .input-group input.error { 
+            border-color: #e74c3c;
+            background: #fdf2f2;
+        }
+        
+        .input-group label { 
+            position: absolute; 
+            left: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            color: #888; 
+            font-size: 14px; 
+            pointer-events: none; 
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            padding: 0 8px;
+        }
+        
+        .input-group input:focus + label, 
+        .input-group input:not(:placeholder-shown) + label { 
+            top: -10px; 
+            left: 12px; 
+            font-size: 12px; 
+            color: #667eea; 
+            background: #fff; 
+            font-weight: 500;
+        }
+        
+        .login-btn { 
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 12px; 
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff; 
+            font-size: 16px; 
+            font-weight: 600;
+            cursor: pointer; 
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .messages { 
+            margin-bottom: 20px; 
+            padding: 12px 15px;
+            border-radius: 10px;
+            font-size: 14px; 
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .messages.error { 
+            background: #ffe6e6;
+            color: #d63031;
+            border: 1px solid #ff7675;
+        }
+        
+        .messages.success { 
+            background: #e6f7e6;
+            color: #27ae60;
+            border: 1px solid #58ca7e;
+        }
+        
+        .forgot-password {
+            text-align: right;
+            margin-top: -15px;
+            margin-bottom: 20px;
+        }
+        
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 480px) { 
+            .login-container { 
+                padding: 30px 20px; 
+            }
+            
+            .login-header h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="login-header">
+        <h2>Welcome Back</h2>
+        <p>Sign in to continue your learning journey</p>
+    </div>
+
+    {% if messages %}
+        <div class="messages {% if messages.0.tags %}{{ messages.0.tags }}{% endif %}">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'student_login' %}">
+        {% csrf_token %}
+
+        <div class="input-group">
+            <input type="text" name="username" placeholder=" " required>
+            <label><i class="fas fa-user me-2"></i>Username</label>
+        </div>
+
+        <div class="input-group">
+            <input type="password" name="password" placeholder=" " required>
+            <label><i class="fas fa-lock me-2"></i>Password</label>
+        </div>
+
+        <div class="forgot-password">
+            <a href="#">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="login-btn">
+            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+        </button>
+
+        <div class="register-link">
+            Don't have an account? <a href="{% url 'student_register' %}">Create Account</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const inputs = form.querySelectorAll('input[required]');
+        
+        // Add floating label functionality
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                if (this.value === '') {
+                    this.parentElement.classList.remove('focused');
+                }
+            });
+            
+            // Check initial state
+            if (input.value !== '') {
+                input.parentElement.classList.add('focused');
+            }
+        });
+        
+        // Simple validation
+        form.addEventListener('submit', function(e) {
+            let allValid = true;
+            
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.classList.add('error');
+                    allValid = false;
+                } else {
+                    input.classList.remove('error');
+                }
+            });
+            
+            if (!allValid) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

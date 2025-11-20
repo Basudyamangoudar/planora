@@ -1,0 +1,118 @@
+{% extends 'admin_panel/base_admin.html' %}
+
+{% block title %}Assignments - Admin Panel{% endblock %}
+{% block page_title %}Assignments Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header with Add Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>All Assignments</h4>
+        <a href="{% url 'add_assignment' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add New Assignment
+        </a>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card border-left-primary">
+                <h5 class="text-primary">{{ total_assignments }}</h5>
+                <p class="mb-0">Total Assignments</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card border-left-success">
+                <h5 class="text-success">{{ project_count }}</h5>
+                <p class="mb-0">Projects</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card border-left-warning">
+                <h5 class="text-warning">{{ quiz_count }}</h5>
+                <p class="mb-0">Quizzes</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card border-left-danger">
+                <h5 class="text-danger">{{ overdue_count }}</h5>
+                <p class="mb-0">Overdue</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assignments Table -->
+    <div class="card">
+        <div class="card-body">
+            {% if assignments %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Course</th>
+                            <th>Type</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assignment in assignments %}
+                        <tr>
+                            <td>{{ assignment.title }}</td>
+                            <td>{{ assignment.course.name }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if assignment.assignment_type == 'project' %}bg-success
+                                    {% elif assignment.assignment_type == 'quiz' %}bg-warning
+                                    {% elif assignment.assignment_type == 'exam' %}bg-danger
+                                    {% else %}bg-primary{% endif %}">
+                                    {{ assignment.assignment_type|title }}
+                                </span>
+                            </td>
+                            <td>{{ assignment.due_date|date:"M d, Y H:i" }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if assignment.is_overdue %}bg-danger
+                                    {% elif assignment.days_until_due <= 2 %}bg-warning
+                                    {% else %}bg-success{% endif %}">
+                                    {% if assignment.is_overdue %}Overdue
+                                    {% else %}Due in {{ assignment.days_until_due }} days{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{% url 'assignment_submissions' assignment.id %}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'edit_assignment' assignment.id %}" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form method="post" action="{% url 'delete_assignment' assignment.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this assignment?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                <h5>No Assignments Created</h5>
+                <p class="text-muted">Get started by creating your first assignment.</p>
+                <a href="{% url 'add_assignment' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create Assignment
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

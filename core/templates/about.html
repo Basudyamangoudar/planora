@@ -1,0 +1,580 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}About - Planora{% endblock %}
+
+{% block content %}
+<style>
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    @keyframes typewriter {
+        from { width: 0; }
+        to { width: 100%; }
+    }
+    
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
+
+    .about-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 120px 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .floating-shapes {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+    
+    .shape {
+        position: absolute;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .shape:nth-child(1) {
+        width: 80px;
+        height: 80px;
+        top: 10%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+    
+    .shape:nth-child(2) {
+        width: 120px;
+        height: 120px;
+        top: 60%;
+        left: 80%;
+        animation-delay: 2s;
+    }
+    
+    .shape:nth-child(3) {
+        width: 60px;
+        height: 60px;
+        top: 80%;
+        left: 20%;
+        animation-delay: 4s;
+    }
+    
+    .typewriter-text {
+        overflow: hidden;
+        border-right: 3px solid white;
+        white-space: nowrap;
+        margin: 0 auto;
+        animation: typewriter 3s steps(40, end), blink 0.8s infinite;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .feature-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        transition: all 0.4s ease;
+        border: none;
+        height: 100%;
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    
+    .feature-card.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-15px) scale(1.02);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    }
+    
+    .feature-icon {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 25px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: white;
+        transition: all 0.4s ease;
+    }
+    
+    .feature-card:hover .feature-icon {
+        transform: rotate(360deg) scale(1.1);
+        background: linear-gradient(135deg, #764ba2, #667eea);
+    }
+    
+    .stats-section {
+        background: linear-gradient(135deg, #2c3e50, #34495e);
+        color: white;
+        padding: 100px 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 30px;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    
+    .stat-item.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .stat-number {
+        font-size: 4rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 15px;
+        display: block;
+    }
+    
+    .developer-section {
+        padding: 100px 0;
+        background: #f8f9fa;
+        text-align: center;
+    }
+    
+    .developer-card {
+        background: white;
+        border-radius: 25px;
+        padding: 50px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        max-width: 500px;
+        margin: 0 auto;
+        opacity: 0;
+        transform: scale(0.8);
+        transition: all 0.6s ease;
+    }
+    
+    .developer-card.visible {
+        opacity: 1;
+        transform: scale(1);
+    }
+    
+    .developer-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        margin: 0 auto 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: white;
+        font-weight: bold;
+        animation: pulse 3s ease-in-out infinite;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+    
+    .college-badge {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 25px;
+        border-radius: 15px;
+        margin: 30px auto;
+        max-width: 400px;
+        transform: translateX(-50px);
+        opacity: 0;
+        transition: all 0.6s ease 0.3s;
+    }
+    
+    .college-badge.visible {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 100px 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-glow {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        border: none;
+        color: white;
+        padding: 18px 40px;
+        border-radius: 50px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .btn-glow:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 15px 35px rgba(46, 204, 113, 0.6);
+    }
+</style>
+
+<!-- Animated Hero Section -->
+<section class="about-hero">
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="display-3 fw-bold mb-4" style="animation: fadeInUp 1s ease;">About Planora</h1>
+            <div class="rotating-text-container" style="height: 60px; width: 450px; max-width: 90%; margin: 0 auto;">
+                <div class="rotating-text active">
+                    <p class="lead" style="font-size: 1.5rem; margin: 0;">Smart Study Planner for Students  </p>
+                </div>
+                <div class="rotating-text">
+                    <p class="lead" style="font-size: 1.5rem; margin: 0;">Organize Your Academic Journey</p>
+                </div>
+                <div class="rotating-text">
+                    <p class="lead" style="font-size: 1.5rem; margin: 0;">Track Progress & Achieve Goals</p>
+                </div>
+                <div class="rotating-text">
+                    <p class="lead" style="font-size: 1.5rem; margin: 0;">AI-Powered Learning Assistant</p>
+                </div>
+            </div>
+            <p class="mt-4" style="animation: fadeInUp 1s ease 1s both; font-size: 1.1rem; opacity: 0.9;">
+                Transform your academic journey with intelligent course management and progress tracking
+            </p>
+        </div>
+    </div>
+</section>
+
+<style>
+    .rotating-text-container {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .rotating-text {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.8s ease;
+        text-align: center;
+    }
+    
+    .rotating-text.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .rotating-text p {
+        overflow: hidden;
+        border-right: 3px solid white;
+        white-space: nowrap;
+        animation: typewriter 3s steps(40, end), blink 0.8s infinite;
+    }
+    
+    @keyframes typewriter {
+        from { width: 0; }
+        to { width: 100%; }
+    }
+    
+    @keyframes blink {
+        0%, 100% { border-color: white; }
+        50% { border-color: transparent; }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const texts = document.querySelectorAll('.rotating-text');
+        let currentIndex = 0;
+        
+        function rotateText() {
+            // Remove active class from all texts
+            texts.forEach(text => text.classList.remove('active'));
+            
+            // Add active class to current text
+            texts[currentIndex].classList.add('active');
+            
+            // Update index for next text
+            currentIndex = (currentIndex + 1) % texts.length;
+        }
+        
+        // Initial call
+        rotateText();
+        
+        // Rotate every 5 seconds (5000 milliseconds)
+        setInterval(rotateText, 5000);
+    });
+</script>
+
+<!-- Animated Features Section -->
+<section style="padding: 100px 0; background: white;">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="fw-bold mb-3" style="animation: fadeInUp 1s ease;">Why Choose Planora?</h2>
+                <p class="lead text-muted" style="animation: fadeInUp 1s ease 0.3s both;">Everything you need to excel in your studies</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h4>Course Management</h4>
+                    <p class="text-muted">
+                        Organize all your courses, track lessons, and monitor your learning journey in one place.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h4>Assignment Tracking</h4>
+                    <p class="text-muted">
+                        Never miss a deadline with smart assignment tracking and priority-based organization.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4>Progress Analytics</h4>
+                    <p class="text-muted">
+                        Visual progress tracking with detailed analytics and completion insights.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h4>AI Study Assistant</h4>
+                    <p class="text-muted">
+                        Get personalized study recommendations and smart learning suggestions.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-download"></i>
+                    </div>
+                    <h4>Resource Library</h4>
+                    <p class="text-muted">
+                        Access organized study materials, notes, and resources for all your courses.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4>Collaborative Learning</h4>
+                    <p class="text-muted">
+                        Join discussion rooms and collaborate with peers for better learning outcomes.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Animated Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="1000">0</span>
+                    <p>Active Students</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="50">0</span>
+                    <p>Courses Available</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="95">0</span>
+                    <p>Success Rate</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="24">0</span>
+                    <p>Hours Support</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Developer Section with Subtle Personal Touch -->
+<section class="developer-section">
+    <div class="container">
+        <div class="developer-card">
+            <div class="developer-avatar">BM</div>
+            <h3 class="mb-3">Crafted with Passion</h3>
+            <p class="lead text-muted mb-4">
+                Developed by Basavaraj, an MCA student passionate about creating tools that enhance learning experiences.
+            </p>
+            <div class="college-badge">
+                <h5 class="mb-2">Basaveshwar Engineering College</h5>
+                <p class="mb-0">Bagalkote</p>
+                <small>Dedicated to educational excellence</small>
+            </div>
+            <p class="text-muted mt-3">
+                This project represents the commitment to blending technology with education for better student outcomes.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Animated CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="fw-bold mb-4" style="animation: fadeInUp 1s ease;">Ready to Transform Your Study Experience?</h2>
+        <p class="lead mb-5" style="animation: fadeInUp 1s ease 0.3s both; font-size: 1.3rem;">
+            Join students who are already achieving academic excellence with Planora
+        </p>
+        <a href="{% url 'student_register' %}" class="btn btn-glow btn-lg">
+            Start Your Journey Today
+        </a>
+    </div>
+</section>
+
+<script>
+    // Scroll animations
+    function checkScroll() {
+        const elements = document.querySelectorAll('.feature-card, .stat-item, .developer-card, .college-badge');
+        elements.forEach(element => {
+            const elementTop = element.getBoundingClientRect().top;
+            const elementVisible = 150;
+            
+            if (elementTop < window.innerHeight - elementVisible) {
+                element.classList.add('visible');
+            }
+        });
+    }
+    
+    // Animated counters
+    function animateCounters() {
+        const counters = document.querySelectorAll('.stat-number');
+        counters.forEach(counter => {
+            const target = +counter.getAttribute('data-count');
+            const count = +counter.innerText;
+            const increment = target / 200;
+            
+            if (count < target) {
+                counter.innerText = Math.ceil(count + increment);
+                setTimeout(animateCounters, 10);
+            } else {
+                counter.innerText = target;
+            }
+        });
+    }
+    
+    // Initialize everything
+    window.addEventListener('scroll', checkScroll);
+    window.addEventListener('load', function() {
+        checkScroll();
+        
+        // Start counters when stats section is visible
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        observer.observe(document.querySelector('.stats-section'));
+    });
+    
+    // Add hover sound effects (optional)
+    document.querySelectorAll('.feature-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-15px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+</script>
+{% endblock %}

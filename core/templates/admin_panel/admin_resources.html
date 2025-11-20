@@ -1,0 +1,151 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load youtube_filters %}
+
+{% block content %}
+<div class="container">
+    <h2>Resources Management</h2>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">{{ total_resources }}</h5>
+                    <p class="card-text">Total Resources</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">{{ pdf_count }}</h5>
+                    <p class="card-text">PDF Files</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <h5 class="card-title">{{ youtube_count }}</h5>
+                    <p class="card-text">YouTube</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">{{ link_count }}</h5>
+                    <p class="card-text">Links</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">{{ video_count }}</h5>
+                    <p class="card-text">Videos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Resource Button -->
+    <div class="mb-3">
+        <a href="{% url 'add_resource' %}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Add New Resource
+        </a>
+    </div>
+    
+    <!-- Resources Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">All Resources</h5>
+        </div>
+        <div class="card-body">
+            {% if resources %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Subject</th>
+                            <th>Grade Level</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for resource in resources %}
+                        <tr>
+                            <td>
+                                <strong>{{ resource.title }}</strong>
+                                {% if resource.description %}
+                                <br><small class="text-muted">{{ resource.description|truncatewords:10 }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge 
+                                    {% if resource.resource_type == 'pdf' %}bg-success
+                                    {% elif resource.resource_type == 'youtube' %}bg-danger
+                                    {% elif resource.resource_type == 'link' %}bg-warning
+                                    {% else %}bg-info{% endif %}">
+                                    {{ resource.get_resource_type_display }}
+                                </span>
+                            </td>
+                            <td>{{ resource.subject }}</td>
+                            <td>{{ resource.grade_level }}</td>
+                            <td>{{ resource.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <!-- View Button -->
+                                    {% if resource.resource_type == 'pdf' %}
+                                        <a href="{{ resource.pdf_file.url }}" target="_blank" class="btn btn-sm btn-info" title="View PDF">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    {% elif resource.resource_type == 'youtube' %}
+                                        <a href="{{ resource.url }}" target="_blank" class="btn btn-sm btn-info" title="Watch Video">
+                                            <i class="fas fa-play"></i>
+                                        </a>
+                                    {% elif resource.resource_type == 'link' %}
+                                        <a href="{{ resource.url }}" target="_blank" class="btn btn-sm btn-info" title="Visit Link">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    {% elif resource.resource_type == 'video' %}
+                                        <a href="{{ resource.video_file.url }}" target="_blank" class="btn btn-sm btn-info" title="Play Video">
+                                            <i class="fas fa-play"></i>
+                                        </a>
+                                    {% endif %}
+                                    
+                                    <!-- Edit Button -->
+                                    <a href="{% url 'edit_resource' resource.id %}" class="btn btn-sm btn-warning" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    
+                                    <!-- Delete Button -->
+                                    <form method="post" action="{% url 'delete_resource' resource.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-danger" 
+                                                onclick="return confirm('Are you sure you want to delete this resource?')" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No resources found. Add your first resource!</p>
+                <a href="{% url 'add_resource' %}" class="btn btn-primary">Add Resource</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}1Planora Admin{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            background: #2c3e50;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        .sidebar .nav-link {
+            color: #ecf0f1;
+            padding: 12px 20px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: #1abc9c;
+            color: white;
+        }
+        .sidebar .nav-link i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #ccc;
+            margin-bottom: 20px;
+        }
+        .logout-btn {
+            background: #e74c3c;
+            color: white !important;
+            margin-top: 20px;
+        }
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+        .stat-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border: none;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.discussion-room-card {
+    transition: transform 0.2s;
+    border: 1px solid #e9ecef;
+}
+
+.discussion-room-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <div class="text-center mb-4">
+                    <h4 class="text-white">Planora Admin</h4>
+                    <p class="text-muted small">Study Planner System</p>
+                </div>
+                
+                <nav class="nav flex-column">
+                    <a class="nav-link {% if request.path == '/admin_dashboard/' %}active{% endif %}" href="{% url 'admin_dashboard' %}">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a class="nav-link {% if request.path == '/student_requests/' %}active{% endif %}" href="{% url 'student_requests' %}">
+                        <i class="fas fa-user-plus"></i> Student Requests
+                    </a>
+                    <a class="nav-link {% if request.path == '/students/' %}active{% endif %}" href="{% url 'students' %}">
+                        <i class="fas fa-user-graduate"></i> Students
+                    </a>
+                    <a class="nav-link {% if request.path == '/admin_courses/' %}active{% endif %}" href="{% url 'admin_courses' %}">
+                        <i class="fas fa-book"></i> Courses
+                    </a>
+                    <a class="nav-link {% if request.path == '/resources/' %}active{% endif %}" href="{% url 'resources' %}">
+                        <i class="fas fa-folder-open"></i> Resources
+                    </a>
+                    <a class="nav-link {% if request.path == '/progress/' %}active{% endif %}" href="{% url 'student_progress' %}">
+                        <i class="fas fa-tasks"></i> Progress
+                    </a>
+                    <!-- Add Assignments Menu Item -->
+                    <a class="nav-link {% if request.path == '/admin_assignments/' %}active{% endif %}" href="{% url 'admin_assignments' %}">
+                        <i class="fas fa-clipboard-list"></i> Assignments
+                    </a>
+                    <a class="nav-link {% if request.path == '/admin_notifications/' %}active{% endif %}" href="{% url 'admin_notifications' %}">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                    <li class="nav-item">
+   <a class="nav-link {% if request.path == '/admin_discussions/' %}active{% endif %}" href="{% url 'admin_discussions' %}">
+    <i class="fas fa-comments me-2"></i> Discussions
+</a>
+</li>
+                    <a class="nav-link {% if request.path == '/admin_lessons/' %}active{% endif %}" href="{% url 'admin_lessons' %}">
+    <i class="fas fa-book-open me-2"></i> Lessons
+</a>
+                    <a class="nav-link {% if request.path == '/admin_settings/' %}active{% endif %}" href="{% url 'admin_settings' %}">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                    <a class="nav-link logout-btn" href="{% url 'admin_logout' %}">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 ml-sm-auto px-4 py-4">
+                <!-- Page Title -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="text-dark">{% block page_title %}Admin Panel{% endblock %}</h2>
+                </div>
+
+                <!-- Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Content Block -->
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

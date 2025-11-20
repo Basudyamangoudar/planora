@@ -1,0 +1,26 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<h2>Manage Courses</h2>
+
+<!-- Add Course Form -->
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="course_name" placeholder="Course Name" required>
+    <button type="submit">Add Course</button>
+</form>
+
+<hr>
+
+<h3>Existing Courses</h3>
+<ul>
+    {% for course in courses %}
+        <li>
+            {{ course.name }}
+            <a href="{% url 'delete_course' course.id %}">Delete</a>
+        </li>
+    {% empty %}
+        <li>No courses yet.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

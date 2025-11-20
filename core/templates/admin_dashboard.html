@@ -1,0 +1,54 @@
+{% extends 'admin_base.html' %}
+
+{% block content %}
+<h1>Dashboard</h1>
+
+<!-- Statistics Cards -->
+<div class="stats-container">
+    <div class="stat-card primary">
+        <i class="fas fa-users"></i>
+        <div class="stat-number">{{ total_students|default:"0" }}</div>
+        <div class="stat-label">Total Students</div>
+    </div>
+    <div class="stat-card success">
+        <i class="fas fa-book"></i>
+        <div class="stat-number">{{ total_courses|default:"0" }}</div>
+        <div class="stat-label">Available Courses</div>
+    </div>
+    <div class="stat-card warning">
+        <i class="fas fa-clock"></i>
+        <div class="stat-number">{{ pending_requests|default:"0" }}</div>
+        <div class="stat-label">Pending Requests</div>
+    </div>
+    <div class="stat-card danger">
+        <i class="fas fa-chart-line"></i>
+        <div class="stat-number">{{ avg_progress|default:"0" }}%</div>
+        <div class="stat-label">Average Progress</div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<h2>Quick Actions</h2>
+<div class="quick-actions">
+    <a href="{% url 'admin_courses' %}" class="action-btn">
+        <i class="fas fa-plus-circle"></i>
+        <h3>Manage Courses</h3>
+        <p>Add, edit or remove courses</p>
+    </a>
+    <a href="{% url 'students' %}" class="action-btn">
+        <i class="fas fa-user-plus"></i>
+        <h3>Manage Students</h3>
+        <p>View and manage students</p>
+    </a>
+    <a href="{% url 'resources' %}" class="action-btn">
+        <i class="fas fa-file-upload"></i>
+        <h3>Add Resources</h3>
+        <p>Upload study materials</p>
+    </a>
+    <a href="{% url 'student_progress' %}" class="action-btn">
+        <i class="fas fa-chart-bar"></i>
+        <h3>View Progress</h3>
+        <p>Monitor student progress</p>
+    </a>
+</div>
+{% endblock %}
