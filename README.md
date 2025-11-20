@@ -1,61 +1,58 @@
-# 🧠 Planora — Smart Study Planner
+ 🧠 Planora — Smart Study Planner
 
 Planora is a smart and interactive study planning system that helps students organize their subjects, track progress, and plan their study sessions effectively. Built using **Django**, **Django REST Framework**, **MySQL**, and **React**, Planora makes study planning simple and productive.
 
 ---
 
-## 📽️ Demo Video  
-YouTube Link: *(Add your demo link here if available)*
 
----
 
-## ✨ Features
+ ✨ Features
 
-### 📌 Study Planning  
+ 📌 Study Planning  
 - Create subjects and tasks  
 - Update task status (Pending / In-progress / Completed)  
 - Auto-generation of study plans (upcoming)
 
-### 📈 Progress Tracking  
+ 📈 Progress Tracking  
 - Track daily & weekly progress  
 - View completed tasks  
 - Task history and analytics (future update)
 
-### 🔐 User Module  
+ 🔐 User Module  
 - User login and registration  
 - Set personal study goals  
 
-### 🧠 AI-based Features (Coming soon)  
+ 🧠 AI-based Features (Coming soon)  
 - Smart daily study schedule  
 - Intelligent task rescheduling  
 - Personalized AI recommendations  
 
-### 🔔 Notifications  
+ 🔔 Notifications  
 - Email reminders (future update)  
 - Task deadline alerts  
 
 ---
 
-## 🛠️ Tech Stack
+ 🛠️ Tech Stack
 
-### **Frontend**
+ **Frontend**
 - React  
 - HTML, CSS, Bootstrap  
 - Axios
 
-### **Backend**
+ **Backend**
 - Django  
 - Django REST Framework  
 - MySQL  
 - Celery + Redis (planned)
 
-### **Tools**
+ **Tools**
 - VS Code  
 - Git & GitHub  
 
 ---
 
-## 📂 Project Structure
+ 📂 Project Structure
 
 planora/
 │── backend/
@@ -70,9 +67,9 @@ planora/
 
 ---
 
-## ⚙️ How to Run Locally
+ ⚙️ How to Run Locally
 
-### 1️⃣ Clone the Repository  
+ 1️⃣ Clone the Repository  
 ```bash
 git clone https://github.com/Basudyamangoudar/planora.git
 cd planora
